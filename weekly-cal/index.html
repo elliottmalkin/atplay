@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>At Play — Weekly Schedule</title>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  .atplay-cal {
+    --ap-color-1: #E8943A;
+    --ap-color-2: #7BAED6;
+    --ap-color-3: #E84B8A;
+    --ap-color-4: #6BAE73;
+    --ap-bg-1: #FDF3E7;
+    --ap-bg-2: #EBF3FA;
+    --ap-bg-3: #FDEAF2;
+    --ap-bg-4: #EDF7EE;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
+    color: #333 !important;
+    line-height: 1.5 !important;
+    -webkit-font-smoothing: antialiased !important;
+  }
+
+  .atplay-cal *, .atplay-cal *::before, .atplay-cal *::after {
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .atplay-cal .ap-header {
+    background: #fff !important;
+    border-bottom: 1px solid #e0e0e0 !important;
+    padding: 16px 24px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+  }
+
+  .atplay-cal .ap-header h1 {
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
+    font-size: 22px !important;
+    font-weight: 700 !important;
+    color: #222 !important;
+    letter-spacing: -0.3px !important;
+    text-transform: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1.3 !important;
+    border: none !important;
+  }
+
+  .atplay-cal .ap-week-nav {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+
+  .atplay-cal .ap-week-nav button {
+    background: #fff !important;
+    border: 1px solid #d0d0d0 !important;
+    border-radius: 6px !important;
+    padding: 6px 14px !important;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #444 !important;
+    cursor: pointer !important;
+    transition: background 0.15s, border-color 0.15s !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    line-height: 1.4 !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+    min-width: auto !important;
+    height: auto !important;
+    text-align: center !important;
+  }
+  .atplay-cal .ap-week-nav button:hover {
+    background: #f0f0f0 !important;
+    border-color: #bbb !important;
+    color: #444 !important;
+    text-decoration: none !important;
+  }
+  .atplay-cal .ap-week-nav button.ap-today-btn {
+    color: var(--ap-color-3) !important;
+    border-color: var(--ap-color-3) !important;
+  }
+  .atplay-cal .ap-week-nav button.ap-today-btn:hover {
+    background: var(--ap-bg-3) !important;
+    color: var(--ap-color-3) !important;
+  }
+
+  .atplay-cal .ap-week-label {
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    color: #555 !important;
+    min-width: 200px !important;
+    text-align: center !important;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
+    text-transform: none !important;
+  }
+
+  .atplay-cal .ap-status-banner {
+    text-align: center !important;
+    color: #888 !important;
+    font-size: 14px !important;
+    line-height: 1.6 !important;
+  }
+  .atplay-cal .ap-setup-msg {
+    padding: 20px 24px !important;
+    background: #FFF8E1 !important;
+    border-bottom: 1px solid #F0E0B0 !important;
+    color: #8D6E00 !important;
+    font-size: 13px !important;
+    text-align: center !important;
+  }
+  .atplay-cal .ap-loading-msg {
+    padding: 16px !important;
+    text-align: center !important;
+    color: #aaa !important;
+    font-size: 14px !important;
+  }
+
+  .atplay-cal .ap-grid {
+    display: grid !important;
+    grid-template-columns: repeat(7, 1fr) !important;
+    gap: 1px !important;
+    background: #e0e0e0 !important;
+    margin: 0 !important;
+  }
+
+  .atplay-cal .ap-day {
+    background: #fff !important;
+    min-height: 160px !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  .atplay-cal .ap-day-hdr {
+    padding: 10px 10px 6px !important;
+    border-bottom: 1px solid #eee !important;
+    text-align: center !important;
+  }
+  .atplay-cal .ap-day-name {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.8px !important;
+    color: #888 !important;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
+  }
+  .atplay-cal .ap-day-num {
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    color: #333 !important;
+    margin-top: 2px !important;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
+    line-height: 1.2 !important;
+  }
+  .atplay-cal .ap-day.is-today .ap-day-num {
+    background: var(--ap-color-3) !important;
+    color: #fff !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 15px !important;
+  }
+
+  .atplay-cal .ap-events {
+    padding: 6px !important;
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+  }
+
+  .atplay-cal .ap-empty {
+    color: #ccc !important;
+    font-size: 12px !important;
+    text-align: center !important;
+    padding: 20px 0 !important;
+  }
+
+  .atplay-cal .ap-card {
+    border-radius: 6px !important;
+    padding: 8px 10px !important;
+    cursor: pointer !important;
+    transition: transform 0.12s, box-shadow 0.12s !important;
+    position: relative !important;
+    border: none !important;
+    text-decoration: none !important;
+    text-align: left !important;
+  }
+  .atplay-cal .ap-card:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.12) !important;
+  }
+
+  .atplay-cal .ap-startline {
+    height: 4px !important;
+    border-radius: 2px !important;
+    margin-bottom: 6px !important;
+  }
+
+  .atplay-cal .ap-card-body {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+
+  .atplay-cal .ap-icon {
+    flex-shrink: 0 !important;
+    width: 28px !important;
+    height: 28px !important;
+  }
+  .atplay-cal .ap-icon svg {
+    width: 28px !important;
+    height: 28px !important;
+    display: block !important;
+  }
+
+  .atplay-cal .ap-info {
+    flex: 1 !important;
+    min-width: 0 !important;
+  }
+
+  .atplay-cal .ap-ev-name {
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    line-height: 1.3 !important;
+    color: #333 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
+    text-transform: none !important;
+    text-decoration: none !important;
+  }
+
+  .atplay-cal .ap-ev-time {
+    font-size: 11px !important;
+    color: #777 !important;
+    margin-top: 2px !important;
+    font-weight: 400 !important;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
+    text-transform: none !important;
+  }
+
+  /* Modal */
+  .atplay-cal .ap-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(0,0,0,0.45) !important;
+    z-index: 99999 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transition: opacity 0.2s !important;
+  }
+  .atplay-cal .ap-overlay.active {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+
+  .atplay-cal .ap-modal {
+    background: #fff !important;
+    border-radius: 12px !important;
+    width: 90% !important;
+    max-width: 440px !important;
+    max-height: 85vh !important;
+    overflow-y: auto !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3) !important;
+    transform: translateY(20px) !important;
+    transition: transform 0.25s !important;
+  }
+  .atplay-cal .ap-overlay.active .ap-modal {
+    transform: translateY(0) !important;
+  }
+
+  .atplay-cal .ap-modal-bar {
+    height: 6px !important;
+    border-radius: 12px 12px 0 0 !important;
+  }
+
+  .atplay-cal .ap-modal-body {
+    padding: 24px !important;
+  }
+
+  .atplay-cal .ap-modal-hdr {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 14px !important;
+    margin-bottom: 20px !important;
+  }
+
+  .atplay-cal .ap-modal-icon {
+    flex-shrink: 0 !important;
+    width: 44px !important;
+    height: 44px !important;
+  }
+  .atplay-cal .ap-modal-icon svg {
+    width: 44px !important;
+    height: 44px !important;
+    display: block !important;
+  }
+
+  .atplay-cal .ap-modal-title {
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    color: #222 !important;
+    line-height: 1.3 !important;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    margin: 0 !important;
+    border: none !important;
+  }
+
+  .atplay-cal .ap-detail {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+    padding: 10px 0 !important;
+    border-top: 1px solid #f0f0f0 !important;
+    font-size: 14px !important;
+    color: #555 !important;
+  }
+  .atplay-cal .ap-detail-lbl {
+    font-weight: 600 !important;
+    color: #888 !important;
+    min-width: 80px !important;
+    font-size: 12px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    padding-top: 2px !important;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
+  }
+  .atplay-cal .ap-detail-val {
+    line-height: 1.5 !important;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
+    color: #555 !important;
+    font-size: 14px !important;
+  }
+  .atplay-cal .ap-detail-val a {
+    color: var(--ap-color-2) !important;
+    text-decoration: none !important;
+  }
+  .atplay-cal .ap-detail-val a:hover {
+    text-decoration: underline !important;
+  }
+
+  .atplay-cal .ap-modal-close {
+    display: block !important;
+    width: 100% !important;
+    margin-top: 20px !important;
+    padding: 10px !important;
+    background: #f5f5f5 !important;
+    border: none !important;
+    border-radius: 8px !important;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #666 !important;
+    cursor: pointer !important;
+    transition: background 0.15s !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    text-decoration: none !important;
+    line-height: 1.4 !important;
+    text-align: center !important;
+  }
+  .atplay-cal .ap-modal-close:hover { background: #eee !important; }
+
+  .atplay-cal .ap-legend {
+    padding: 10px 24px !important;
+    background: #fff !important;
+    border-top: 1px solid #e0e0e0 !important;
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 16px !important;
+    align-items: center !important;
+    font-size: 12px !important;
+    color: #777 !important;
+  }
+  .atplay-cal .ap-legend-item {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
+    font-size: 12px !important;
+    color: #777 !important;
+  }
+  .atplay-cal .ap-legend-dot {
+    width: 10px !important;
+    height: 10px !important;
+    border-radius: 50% !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Mobile: stack days vertically */
+  @media (max-width: 768px) {
+    .atplay-cal .ap-header {
+      padding: 12px 16px !important;
+      justify-content: center !important;
+      text-align: center !important;
+    }
+    .atplay-cal .ap-header h1 { width: 100% !important; }
+
+    .atplay-cal .ap-week-label { min-width: auto !important; font-size: 14px !important; }
+    .atplay-cal .ap-week-nav button { padding: 6px 10px !important; font-size: 12px !important; }
+
+    .atplay-cal .ap-grid {
+      grid-template-columns: 1fr !important;
+      gap: 0 !important;
+      background: transparent !important;
+    }
+
+    .atplay-cal .ap-day {
+      border-bottom: 1px solid #e0e0e0 !important;
+      min-height: auto !important;
+    }
+    .atplay-cal .ap-day.mobile-hidden { display: none !important; }
+
+    .atplay-cal .ap-day-hdr {
+      text-align: left !important;
+      padding: 14px 16px 8px !important;
+      display: flex !important;
+      align-items: baseline !important;
+      gap: 8px !important;
+      border-bottom: none !important;
+    }
+    .atplay-cal .ap-day-name { font-size: 13px !important; }
+    .atplay-cal .ap-day-num { font-size: 16px !important; }
+
+    .atplay-cal .ap-events { padding: 4px 12px 14px !important; }
+
+    .atplay-cal .ap-card { padding: 10px 12px !important; }
+    .atplay-cal .ap-ev-name { font-size: 14px !important; }
+    .atplay-cal .ap-ev-time { font-size: 12px !important; }
+    .atplay-cal .ap-icon { width: 32px !important; height: 32px !important; }
+    .atplay-cal .ap-icon svg { width: 32px !important; height: 32px !important; }
+
+    .atplay-cal .ap-modal {
+      width: 100% !important;
+      max-width: 100% !important;
+      max-height: 100vh !important;
+      border-radius: 0 !important;
+      min-height: 100vh !important;
+    }
+    .atplay-cal .ap-modal-body { padding: 20px 16px !important; }
+
+    .atplay-cal .ap-legend { padding: 10px 16px !important; justify-content: center !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="atplay-cal">
+
+  <div class="ap-header">
+    <h1>At Play</h1>
+    <div class="ap-week-nav">
+      <button onclick="navigateWeek(-1)" aria-label="Previous week">&larr; Prev</button>
+      <button class="ap-today-btn" onclick="navigateToday()">Today</button>
+      <button onclick="navigateWeek(1)" aria-label="Next week">Next &rarr;</button>
+    </div>
+    <div class="ap-week-label" id="weekLabel"></div>
+  </div>
+
+  <div id="statusBanner" class="ap-status-banner"></div>
+  <div id="calendarRoot"></div>
+  <div id="legend" class="ap-legend"></div>
+
+  <div class="ap-overlay" id="modalOverlay" onclick="closeModal(event)">
+    <div class="ap-modal" id="modalContent" onclick="event.stopPropagation()"></div>
+  </div>
+
+</div>
+
+<script>
+const CONFIG = {
+  CALENDAR_ID: 'c_ade5d17214381af99c90f185a13faba2bbbc86b080a1e69c95aeaf90aa9fce59@group.calendar.google.com',
+  API_KEY: '',
+  TIMEZONE: 'America/New_York',
+  MOBILE_BREAKPOINT: 768,
+};
+
+const ICAL_URL = 'https://calendar.google.com/calendar/ical/'
+  + encodeURIComponent(CONFIG.CALENDAR_ID) + '/public/basic.ics';
+
+const CORS_PROXIES = [
+  url => 'https://corsproxy.io/?' + encodeURIComponent(url),
+  url => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
+];
+
+const PALETTE = [
+  { color: '#E8943A', bg: '#FDF3E7' },
+  { color: '#7BAED6', bg: '#EBF3FA' },
+  { color: '#E84B8A', bg: '#FDEAF2' },
+  { color: '#6BAE73', bg: '#EDF7EE' },
+];
+
+const ICON_MAP = [
+  { keywords: ['yoga', 'stretch', 'mindful', 'meditation', 'zen'], icon: 'yoga' },
+  { keywords: ['dance', 'ballet', 'hip hop', 'hiphop', 'jazz', 'tap', 'salsa', 'movement'], icon: 'dance' },
+  { keywords: ['karate', 'martial', 'judo', 'taekwondo', 'kung fu', 'aikido', 'capoeira'], icon: 'martial' },
+  { keywords: ['swim', 'aqua', 'water', 'pool', 'dive'], icon: 'swim' },
+  { keywords: ['music', 'sing', 'choir', 'drum', 'guitar', 'piano', 'violin', 'band', 'ukulele'], icon: 'music' },
+  { keywords: ['art', 'craft', 'paint', 'draw', 'sketch', 'pottery', 'clay', 'sculpt', 'creative'], icon: 'art' },
+  { keywords: ['cook', 'bake', 'kitchen', 'chef', 'food', 'culinary'], icon: 'cook' },
+  { keywords: ['science', 'stem', 'lab', 'experiment', 'robot', 'coding', 'tech', 'engineer'], icon: 'science' },
+  { keywords: ['soccer', 'basketball', 'baseball', 'tennis', 'sport', 'football', 'volley', 'lacrosse', 'hockey'], icon: 'sports' },
+  { keywords: ['climb', 'adventure', 'obstacle', 'parkour', 'ninja'], icon: 'climb' },
+  { keywords: ['theatre', 'theater', 'drama', 'act', 'improv', 'perform', 'circus'], icon: 'theater' },
+  { keywords: ['read', 'book', 'story', 'literacy', 'writing', 'journal'], icon: 'book' },
+  { keywords: ['garden', 'nature', 'outdoor', 'hike', 'forest', 'farm'], icon: 'nature' },
+  { keywords: ['chess', 'game', 'puzzle', 'board', 'strategy'], icon: 'game' },
+  { keywords: ['gym', 'fitness', 'workout', 'exercise', 'boot camp', 'cross'], icon: 'fitness' },
+  { keywords: ['play', 'free', 'open', 'recess', 'fun'], icon: 'play' },
+  { keywords: ['photo', 'film', 'video', 'media', 'animation'], icon: 'camera' },
+  { keywords: ['lego', 'build', 'construct', 'maker', 'tinker'], icon: 'build' },
+];
+
+function getSvgIcon(type, fillColor) {
+  const c = fillColor;
+  const icons = {
+    yoga: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="8" r="4" fill="${c}"/><path d="M20 14c-2 0-3.5 1-4.5 2.5L10 22l2.5 1.5 4-3.5v4l-5.5 8 2.5 1.5L18 28l2 3 2-3 4.5 5.5 2.5-1.5-5.5-8v-4l4 3.5L30 22l-5.5-5.5C23.5 15 22 14 20 14z" fill="${c}"/></svg>`,
+    dance: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="22" cy="7" r="4" fill="${c}"/><path d="M18 13c-1 0-2 .5-2.5 1.5L12 22h3l2-4 1 3-4 7 2.5 1.5L20 24l2 5h3l-3-8 3-4c1-1.5.5-3-.5-4s-3-1-4 0z" fill="${c}"/><path d="M26 16c1 2 2 4 1 6l-1 3h3l1-3c1-3 0-5-1-7l-3 1z" fill="${c}" opacity="0.7"/></svg>`,
+    martial: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="7" r="4" fill="${c}"/><path d="M20 13c-2 0-3 1-3.5 2L14 20l3 1 2-3v4l-5 8 2.5 1.5L20 27l3.5 4.5L26 30l-5-8v-4l4 4 6-1-1-2.5-5-3c-1-1-2.5-2.5-5-2.5z" fill="${c}"/></svg>`,
+    swim: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="16" r="3.5" fill="${c}"/><path d="M16 18l8-3 4 2 2-2.5-5-3c-1-.5-2-.3-3 .2l-4 2-2.5-1.5L14 14l2 4z" fill="${c}"/><path d="M6 26q2-2 5 0t5 0 5 0 5 0 5 0" stroke="${c}" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M6 31q2-2 5 0t5 0 5 0 5 0 5 0" stroke="${c}" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.5"/></svg>`,
+    music: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M28 6v22" stroke="${c}" stroke-width="2.5"/><path d="M12 10v20" stroke="${c}" stroke-width="2.5"/><rect x="12" y="6" width="16" height="8" rx="2" fill="${c}" opacity="0.3"/><circle cx="9" cy="30" r="4" fill="${c}"/><circle cx="25" cy="28" r="4" fill="${c}"/></svg>`,
+    art: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 4C11 4 4 11 4 20s7 16 16 16c1.5 0 2.5-1 2.5-2.5 0-.6-.2-1.2-.6-1.6-.3-.4-.5-1-.5-1.6 0-1.4 1.1-2.5 2.5-2.5H27c5 0 9-4 9-9 0-8.3-7.2-14.8-16-14.8z" fill="${c}" opacity="0.15"/><circle cx="14" cy="14" r="3" fill="${c}"/><circle cx="24" cy="12" r="3" fill="${c}" opacity="0.7"/><circle cx="28" cy="20" r="3" fill="${c}" opacity="0.5"/><circle cx="13" cy="23" r="3" fill="${c}" opacity="0.8"/></svg>`,
+    cook: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="20" cy="12" rx="12" ry="5" fill="${c}" opacity="0.3"/><path d="M8 12v4c0 6.6 5.4 12 12 12s12-5.4 12-12v-4" stroke="${c}" stroke-width="2.5" fill="none"/><path d="M20 2v6M15 3l2 5M25 3l-2 5" stroke="${c}" stroke-width="2" stroke-linecap="round"/></svg>`,
+    science: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16 4h8v12l8 14c1 2 0 4-2 4H10c-2 0-3-2-2-4l8-14V4z" fill="${c}" opacity="0.15" stroke="${c}" stroke-width="2"/><path d="M16 4h8" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/><circle cx="18" cy="28" r="2" fill="${c}"/><circle cx="23" cy="25" r="1.5" fill="${c}" opacity="0.6"/><circle cx="20" cy="31" r="1.5" fill="${c}" opacity="0.8"/></svg>`,
+    sports: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="13" stroke="${c}" stroke-width="2.5" fill="${c}" fill-opacity="0.12"/><path d="M20 7v26M7 20h26" stroke="${c}" stroke-width="2"/><path d="M10 10c3 3 7 5 10 5s7-2 10-5M10 30c3-3 7-5 10-5s7 2 10 5" stroke="${c}" stroke-width="2" fill="none"/></svg>`,
+    climb: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="8" r="4" fill="${c}"/><path d="M20 14c-1.5 0-2.5.8-3 2l-3 7h3l2-4 1 6-5 7 2.5 1.5L20 28l2.5 5.5L25 32l-3-7v-6l3 4 3-1-1-2-4-4c-.8-1.2-1.8-2-3-2z" fill="${c}"/></svg>`,
+    theater: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 8h13v16c0 3.5-2.9 6.5-6.5 6.5S6 27.5 6 24V8z" fill="${c}" opacity="0.25"/><circle cx="10" cy="16" r="1.5" fill="${c}"/><circle cx="15" cy="16" r="1.5" fill="${c}"/><path d="M9 21c1 1.5 3.5 1.5 5 0" stroke="${c}" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M21 6h13v16c0 3.5-2.9 6.5-6.5 6.5S21 25.5 21 22V6z" fill="${c}" opacity="0.4"/><circle cx="25" cy="14" r="1.5" fill="${c}"/><circle cx="30" cy="14" r="1.5" fill="${c}"/><path d="M24.5 19.5c1-1.5 3.5-1.5 5 0" stroke="${c}" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>`,
+    book: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 8c3-2 7-2 14 0v24c-7-2-11-2-14 0V8z" fill="${c}" opacity="0.2"/><path d="M34 8c-3-2-7-2-14 0v24c7-2 11-2 14 0V8z" fill="${c}" opacity="0.35"/><path d="M20 8v24" stroke="${c}" stroke-width="1.5"/></svg>`,
+    nature: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 4L8 24h8l-4 12h16l-4-12h8L20 4z" fill="${c}" opacity="0.3"/><rect x="18" y="28" width="4" height="8" fill="${c}" opacity="0.5"/><path d="M20 4L12 18h5l-3 8h12l-3-8h5L20 4z" fill="${c}" opacity="0.2"/></svg>`,
+    game: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="6" width="28" height="28" rx="3" fill="${c}" opacity="0.15"/><rect x="6" y="6" width="14" height="14" fill="${c}" opacity="0.25"/><rect x="20" y="20" width="14" height="14" rx="0" fill="${c}" opacity="0.25"/><circle cx="13" cy="27" r="3" fill="${c}"/><circle cx="27" cy="13" r="3" fill="${c}"/></svg>`,
+    fitness: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="16" width="6" height="8" rx="2" fill="${c}"/><rect x="30" y="16" width="6" height="8" rx="2" fill="${c}"/><rect x="8" y="13" width="5" height="14" rx="2" fill="${c}" opacity="0.6"/><rect x="27" y="13" width="5" height="14" rx="2" fill="${c}" opacity="0.6"/><rect x="13" y="18" width="14" height="4" rx="1" fill="${c}" opacity="0.4"/></svg>`,
+    play: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="15" fill="${c}" opacity="0.15"/><path d="M28 20l-12 8V12l12 8z" fill="${c}"/></svg>`,
+    camera: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 14a3 3 0 013-3h5l2-3h12l2 3h5a3 3 0 013 3v16a3 3 0 01-3 3H7a3 3 0 01-3-3V14z" fill="${c}" opacity="0.2"/><circle cx="20" cy="21" r="7" stroke="${c}" stroke-width="2.5" fill="none"/><circle cx="20" cy="21" r="4" fill="${c}" opacity="0.4"/></svg>`,
+    build: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="22" width="10" height="10" rx="1" fill="${c}" opacity="0.5"/><rect x="15" y="14" width="10" height="18" rx="1" fill="${c}" opacity="0.35"/><rect x="24" y="8" width="10" height="24" rx="1" fill="${c}" opacity="0.5"/></svg>`,
+    default: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 4l4.5 9.2 10.1 1.5-7.3 7.1 1.7 10.1L20 27l-9 4.8 1.7-10.1-7.3-7.1 10.1-1.5L20 4z" fill="${c}"/></svg>`,
+  };
+  return icons[type] || icons.default;
+}
+
+function getIconType(eventName) {
+  const lower = eventName.toLowerCase();
+  for (const entry of ICON_MAP) {
+    if (entry.keywords.some(kw => lower.includes(kw))) return entry.icon;
+  }
+  return 'default';
+}
+
+const colorAssignments = {};
+let nextColorIndex = 0;
+let currentEvents = [];
+
+function getColorForClass(className) {
+  const key = className.trim().toLowerCase();
+  if (colorAssignments[key] !== undefined) return colorAssignments[key];
+  const maxColors = PALETTE.length - 1;
+  colorAssignments[key] = nextColorIndex % maxColors;
+  nextColorIndex++;
+  if (nextColorIndex > maxColors * 2 && Object.keys(colorAssignments).length > maxColors) {
+    const keys = Object.keys(colorAssignments);
+    const lastKey = keys[keys.length - 1];
+    if (colorAssignments[lastKey] < maxColors) {
+      colorAssignments[lastKey] = 3;
+    }
+  }
+  return colorAssignments[key];
+}
+
+let currentWeekStart = getWeekStart(new Date());
+
+function getWeekStart(date) {
+  const d = new Date(date);
+  d.setDate(d.getDate() - d.getDay());
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function addDays(date, days) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + days);
+  return d;
+}
+
+function formatDate(date) {
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function formatDateFull(date) {
+  return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+}
+
+function formatTime(dateStr) {
+  const d = new Date(dateStr);
+  return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+}
+
+function formatTimeRange(start, end) {
+  return formatTime(start) + ' – ' + formatTime(end);
+}
+
+function isSameDay(d1, d2) {
+  return d1.getFullYear() === d2.getFullYear() && d1.getMonth() === d2.getMonth() && d1.getDate() === d2.getDate();
+}
+
+function isToday(date) {
+  return isSameDay(date, new Date());
+}
+
+function updateWeekLabel() {
+  const end = addDays(currentWeekStart, 6);
+  document.getElementById('weekLabel').textContent =
+    formatDate(currentWeekStart) + ' – ' + formatDate(end) + ', ' + end.getFullYear();
+}
+
+function navigateWeek(dir) {
+  currentWeekStart = addDays(currentWeekStart, dir * 7);
+  loadCalendar();
+}
+
+function navigateToday() {
+  currentWeekStart = getWeekStart(new Date());
+  loadCalendar();
+}
+
+/* ---- iCal parsing ---- */
+
+function parseICalDate(str) {
+  if (!str) return null;
+  str = str.replace(/^.*:/, '');
+  if (str.includes('T')) {
+    var y = str.slice(0,4), m = str.slice(4,6), d = str.slice(6,8);
+    var h = str.slice(9,11), mi = str.slice(11,13), s = str.slice(13,15);
+    var iso = y + '-' + m + '-' + d + 'T' + h + ':' + mi + ':' + s;
+    if (str.endsWith('Z')) return new Date(iso + 'Z');
+    return new Date(iso);
+  }
+  var y2 = str.slice(0,4), m2 = str.slice(4,6), d2 = str.slice(6,8);
+  return new Date(y2 + '-' + m2 + '-' + d2 + 'T00:00:00');
+}
+
+function unescapeIcal(str) {
+  return str.replace(/\\n/g, '\n').replace(/\\,/g, ',').replace(/\\\\/g, '\\');
+}
+
+function parseICal(text) {
+  var lines = [];
+  var rawLines = text.split(/\r?\n/);
+  for (var i = 0; i < rawLines.length; i++) {
+    var raw = rawLines[i];
+    if (raw.charAt(0) === ' ' || raw.charAt(0) === '\t') {
+      if (lines.length) lines[lines.length - 1] += raw.slice(1);
+    } else {
+      lines.push(raw);
+    }
+  }
+  var events = [];
+  var inEvent = false, ev = {};
+  for (var j = 0; j < lines.length; j++) {
+    var line = lines[j];
+    if (line === 'BEGIN:VEVENT') { inEvent = true; ev = {}; continue; }
+    if (line === 'END:VEVENT') { inEvent = false; if (ev.dtstart) events.push(ev); continue; }
+    if (!inEvent) continue;
+    var ci = line.indexOf(':');
+    if (ci < 0) continue;
+    var key = line.slice(0, ci).split(';')[0].toUpperCase();
+    var val = line.slice(ci + 1);
+    if (key === 'SUMMARY') ev.summary = unescapeIcal(val);
+    else if (key === 'DTSTART') ev.dtstart = parseICalDate(val);
+    else if (key === 'DTEND') ev.dtend = parseICalDate(val);
+    else if (key === 'DESCRIPTION') ev.description = unescapeIcal(val);
+    else if (key === 'LOCATION') ev.location = unescapeIcal(val);
+    else if (key === 'UID') ev.uid = val;
+  }
+  return events;
+}
+
+function normalizeEvents(icalEvents, weekStart, weekEnd) {
+  return icalEvents
+    .filter(function(e) {
+      if (!e.dtstart) return false;
+      var isAllDay = e.dtstart.getHours() === 0 && e.dtstart.getMinutes() === 0
+        && e.dtend && e.dtend.getHours() === 0 && e.dtend.getMinutes() === 0
+        && (e.dtend - e.dtstart) >= 86400000;
+      if (isAllDay) return false;
+      return e.dtstart >= weekStart && e.dtstart < weekEnd;
+    })
+    .sort(function(a, b) { return a.dtstart - b.dtstart; })
+    .map(function(e) {
+      return {
+        summary: e.summary || 'Untitled',
+        start: { dateTime: e.dtstart.toISOString() },
+        end: { dateTime: (e.dtend || new Date(e.dtstart.getTime() + 3600000)).toISOString() },
+        description: e.description || '',
+        location: e.location || '',
+        htmlLink: '',
+      };
+    });
+}
+
+async function fetchViaICal() {
+  var lastErr;
+  for (var i = 0; i < CORS_PROXIES.length; i++) {
+    try {
+      var res = await fetch(CORS_PROXIES[i](ICAL_URL));
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      var text = await res.text();
+      if (!text.includes('BEGIN:VCALENDAR')) throw new Error('Invalid iCal data');
+      var weekEnd = addDays(currentWeekStart, 7);
+      return normalizeEvents(parseICal(text), currentWeekStart, weekEnd);
+    } catch (e) { lastErr = e; }
+  }
+  throw lastErr || new Error('All proxies failed');
+}
+
+async function fetchViaAPI() {
+  if (!CONFIG.API_KEY) throw new Error('No API key');
+  var timeMin = currentWeekStart.toISOString();
+  var timeMax = addDays(currentWeekStart, 7).toISOString();
+  var calId = encodeURIComponent(CONFIG.CALENDAR_ID);
+  var url = 'https://www.googleapis.com/calendar/v3/calendars/' + calId + '/events?'
+    + 'key=' + CONFIG.API_KEY
+    + '&timeMin=' + timeMin + '&timeMax=' + timeMax
+    + '&singleEvents=true&orderBy=startTime'
+    + '&timeZone=' + CONFIG.TIMEZONE + '&maxResults=250';
+  var res = await fetch(url);
+  if (!res.ok) {
+    var err = await res.json().catch(function() { return {}; });
+    throw new Error((err.error && err.error.message) || 'API ' + res.status);
+  }
+  var data = await res.json();
+  return (data.items || []).filter(function(e) { return e.start && e.start.dateTime; });
+}
+
+async function fetchEvents() {
+  if (CONFIG.API_KEY) {
+    try { return await fetchViaAPI(); } catch (_) {}
+  }
+  return await fetchViaICal();
+}
+
+/* ---- Rendering ---- */
+
+function groupByDay(events) {
+  var days = [];
+  for (var i = 0; i < 7; i++) {
+    days.push({ date: addDays(currentWeekStart, i), events: [] });
+  }
+  for (var j = 0; j < events.length; j++) {
+    var evDate = new Date(events[j].start.dateTime);
+    for (var k = 0; k < days.length; k++) {
+      if (isSameDay(evDate, days[k].date)) { days[k].events.push(events[j]); break; }
+    }
+  }
+  return days;
+}
+
+function renderCalendar(events) {
+  currentEvents = events;
+  var root = document.getElementById('calendarRoot');
+  var days = groupByDay(events);
+  var isMobile = window.innerWidth <= CONFIG.MOBILE_BREAKPOINT;
+  var dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  var html = '<div class="ap-grid">';
+
+  for (var i = 0; i < days.length; i++) {
+    var day = days[i];
+    var today = isToday(day.date);
+    var hasEvents = day.events.length > 0;
+    var cls = 'ap-day' + (today ? ' is-today' : '') + (isMobile && !hasEvents ? ' mobile-hidden' : '');
+
+    html += '<div class="' + cls + '">';
+    html += '<div class="ap-day-hdr">';
+    html += '<div class="ap-day-name">' + dayNames[day.date.getDay()] + '</div>';
+    html += '<div class="ap-day-num">' + day.date.getDate() + '</div>';
+    html += '</div><div class="ap-events">';
+
+    if (!hasEvents) {
+      html += '<div class="ap-empty">&mdash;</div>';
+    } else {
+      for (var j = 0; j < day.events.length; j++) {
+        var ev = day.events[j];
+        var gi = events.indexOf(ev);
+        var ci = getColorForClass(ev.summary || 'Event');
+        var pal = PALETTE[ci];
+        var iconType = getIconType(ev.summary || '');
+        var icon = getSvgIcon(iconType, pal.color);
+
+        html += '<div class="ap-card" data-idx="' + gi + '" style="background:' + pal.bg + '">';
+        html += '<div class="ap-startline" style="background:' + pal.color + '"></div>';
+        html += '<div class="ap-card-body">';
+        html += '<div class="ap-icon">' + icon + '</div>';
+        html += '<div class="ap-info">';
+        html += '<div class="ap-ev-name">' + escapeHtml(ev.summary || 'Untitled') + '</div>';
+        html += '<div class="ap-ev-time">' + formatTimeRange(ev.start.dateTime, ev.end.dateTime) + '</div>';
+        html += '</div></div></div>';
+      }
+    }
+    html += '</div></div>';
+  }
+  html += '</div>';
+  root.innerHTML = html;
+  renderLegend();
+}
+
+function renderLegend() {
+  var legend = document.getElementById('legend');
+  var entries = Object.entries(colorAssignments).sort(function(a, b) { return a[1] - b[1]; });
+  if (!entries.length) { legend.innerHTML = ''; return; }
+  var html = '';
+  for (var i = 0; i < entries.length; i++) {
+    var name = entries[i][0], ci = entries[i][1];
+    var pal = PALETTE[ci];
+    var display = name.split(' ').map(function(w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join(' ');
+    html += '<div class="ap-legend-item"><span class="ap-legend-dot" style="background:' + pal.color + '"></span>' + display + '</div>';
+  }
+  legend.innerHTML = html;
+}
+
+function showModal(idx) {
+  var ev = currentEvents[idx];
+  if (!ev) return;
+  var ci = getColorForClass(ev.summary || 'Event');
+  var pal = PALETTE[ci];
+  var iconType = getIconType(ev.summary || '');
+  var icon = getSvgIcon(iconType, pal.color);
+  var startDate = new Date(ev.start.dateTime);
+
+  var html = '<div class="ap-modal-bar" style="background:' + pal.color + '"></div>';
+  html += '<div class="ap-modal-body">';
+  html += '<div class="ap-modal-hdr">';
+  html += '<div class="ap-modal-icon">' + icon + '</div>';
+  html += '<div class="ap-modal-title">' + escapeHtml(ev.summary || 'Untitled') + '</div>';
+  html += '</div>';
+
+  html += '<div class="ap-detail"><span class="ap-detail-lbl">Date</span>';
+  html += '<span class="ap-detail-val">' + formatDateFull(startDate) + '</span></div>';
+
+  html += '<div class="ap-detail"><span class="ap-detail-lbl">Time</span>';
+  html += '<span class="ap-detail-val">' + formatTimeRange(ev.start.dateTime, ev.end.dateTime) + '</span></div>';
+
+  if (ev.location) {
+    html += '<div class="ap-detail"><span class="ap-detail-lbl">Location</span>';
+    html += '<span class="ap-detail-val">' + escapeHtml(ev.location) + '</span></div>';
+  }
+
+  if (ev.description) {
+    html += '<div class="ap-detail"><span class="ap-detail-lbl">Details</span>';
+    html += '<span class="ap-detail-val">' + sanitizeDescription(ev.description) + '</span></div>';
+  }
+
+  if (ev.htmlLink) {
+    html += '<div class="ap-detail"><span class="ap-detail-lbl">Link</span>';
+    html += '<span class="ap-detail-val"><a href="' + escapeHtml(ev.htmlLink) + '" target="_blank" rel="noopener">View in Google Calendar</a></span></div>';
+  }
+
+  html += '<button class="ap-modal-close" onclick="closeModal()">Close</button>';
+  html += '</div>';
+
+  document.getElementById('modalContent').innerHTML = html;
+  document.getElementById('modalOverlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(e) {
+  if (e && e.target !== document.getElementById('modalOverlay')) return;
+  document.getElementById('modalOverlay').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeModal();
+});
+
+document.getElementById('calendarRoot').addEventListener('click', function(e) {
+  var card = e.target.closest('.ap-card');
+  if (!card) return;
+  var idx = parseInt(card.dataset.idx, 10);
+  if (!isNaN(idx)) showModal(idx);
+});
+
+function escapeHtml(str) {
+  var div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function sanitizeDescription(html) {
+  var tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  var bad = tmp.querySelectorAll('script,style,iframe,object,embed');
+  for (var i = 0; i < bad.length; i++) bad[i].remove();
+  return tmp.innerHTML;
+}
+
+async function loadCalendar() {
+  updateWeekLabel();
+  var banner = document.getElementById('statusBanner');
+  banner.innerHTML = '<div class="ap-loading-msg">Loading schedule…</div>';
+  renderCalendar([]);
+
+  try {
+    var events = await fetchEvents();
+    banner.innerHTML = '';
+    renderCalendar(events);
+  } catch (err) {
+    banner.innerHTML = '<div class="ap-setup-msg">'
+      + 'Could not load live calendar data. Make sure the Google Calendar is set to public, '
+      + 'or add a Google Calendar API key in <code>CONFIG.API_KEY</code>.'
+      + '</div>';
+  }
+}
+
+var resizeTimer;
+window.addEventListener('resize', function() {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(function() {
+    if (currentEvents.length > 0) renderCalendar(currentEvents);
+  }, 200);
+});
+
+loadCalendar();
+</script>
+</body>
+</html>
