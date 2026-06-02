@@ -15,6 +15,7 @@
     --ap-bg-2: #EBF3FA;
     --ap-bg-3: #FDEAF2;
     --ap-bg-4: #EDF7EE;
+    --ap-hour-h: 60px;
     font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
     color: #333 !important;
     line-height: 1.5 !important;
@@ -27,6 +28,7 @@
     padding: 0 !important;
   }
 
+  /* ---- Header ---- */
   .atplay-cal .ap-header {
     background: #fff !important;
     border-bottom: 1px solid #e0e0e0 !important;
@@ -37,7 +39,6 @@
     flex-wrap: wrap !important;
     gap: 12px !important;
   }
-
   .atplay-cal .ap-header h1 {
     font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
     font-size: 22px !important;
@@ -50,13 +51,11 @@
     line-height: 1.3 !important;
     border: none !important;
   }
-
   .atplay-cal .ap-week-nav {
     display: flex !important;
     align-items: center !important;
     gap: 8px !important;
   }
-
   .atplay-cal .ap-week-nav button {
     background: #fff !important;
     border: 1px solid #d0d0d0 !important;
@@ -73,15 +72,12 @@
     line-height: 1.4 !important;
     text-decoration: none !important;
     display: inline-block !important;
-    min-width: auto !important;
     height: auto !important;
     text-align: center !important;
   }
   .atplay-cal .ap-week-nav button:hover {
     background: #f0f0f0 !important;
     border-color: #bbb !important;
-    color: #444 !important;
-    text-decoration: none !important;
   }
   .atplay-cal .ap-week-nav button.ap-today-btn {
     color: var(--ap-color-3) !important;
@@ -89,9 +85,7 @@
   }
   .atplay-cal .ap-week-nav button.ap-today-btn:hover {
     background: var(--ap-bg-3) !important;
-    color: var(--ap-color-3) !important;
   }
-
   .atplay-cal .ap-week-label {
     font-size: 15px !important;
     font-weight: 600 !important;
@@ -102,6 +96,7 @@
     text-transform: none !important;
   }
 
+  /* ---- Status / loading ---- */
   .atplay-cal .ap-status-banner {
     text-align: center !important;
     color: #888 !important;
@@ -123,137 +118,172 @@
     font-size: 14px !important;
   }
 
-  .atplay-cal .ap-grid {
+  /* ---- Timetable grid (desktop) ---- */
+  .atplay-cal .ap-timetable {
     display: grid !important;
-    grid-template-columns: repeat(7, 1fr) !important;
-    gap: 1px !important;
-    background: #e0e0e0 !important;
+    grid-template-columns: 52px repeat(7, 1fr) !important;
+    gap: 0 !important;
+    background: #e8e8e8 !important;
     margin: 0 !important;
+    overflow-x: auto !important;
   }
 
-  .atplay-cal .ap-day {
+  /* Time gutter column */
+  .atplay-cal .ap-time-col {
     background: #fff !important;
-    min-height: 160px !important;
     display: flex !important;
     flex-direction: column !important;
+    border-right: 1px solid #e0e0e0 !important;
+  }
+  .atplay-cal .ap-gutter-corner {
+    border-bottom: 1px solid #e0e0e0 !important;
+    min-height: 46px !important;
+  }
+  .atplay-cal .ap-time-gutter {
+    position: relative !important;
+  }
+  .atplay-cal .ap-time-label {
+    position: absolute !important;
+    right: 6px !important;
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    color: #aaa !important;
+    line-height: 1 !important;
+    transform: translateY(-50%) !important;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
+    white-space: nowrap !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
   }
 
+  /* Day columns */
+  .atplay-cal .ap-day-col {
+    background: #fff !important;
+    display: flex !important;
+    flex-direction: column !important;
+    min-width: 0 !important;
+    border-left: 1px solid #e8e8e8 !important;
+  }
   .atplay-cal .ap-day-hdr {
-    padding: 10px 10px 6px !important;
-    border-bottom: 1px solid #eee !important;
+    padding: 8px 4px 6px !important;
+    border-bottom: 1px solid #e0e0e0 !important;
     text-align: center !important;
+    background: #fff !important;
+    min-height: 46px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
   .atplay-cal .ap-day-name {
-    font-size: 11px !important;
+    font-size: 10px !important;
     font-weight: 700 !important;
     text-transform: uppercase !important;
     letter-spacing: 0.8px !important;
-    color: #888 !important;
+    color: #999 !important;
     font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
+    line-height: 1 !important;
   }
   .atplay-cal .ap-day-num {
-    font-size: 20px !important;
+    font-size: 18px !important;
     font-weight: 700 !important;
     color: #333 !important;
-    margin-top: 2px !important;
     font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
     line-height: 1.2 !important;
+    margin-top: 2px !important;
   }
-  .atplay-cal .ap-day.is-today .ap-day-num {
+  .atplay-cal .ap-day-col.is-today .ap-day-num {
     background: var(--ap-color-3) !important;
     color: #fff !important;
-    width: 32px !important;
-    height: 32px !important;
+    width: 28px !important;
+    height: 28px !important;
     border-radius: 50% !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    font-size: 15px !important;
+    font-size: 14px !important;
   }
 
-  .atplay-cal .ap-events {
-    padding: 6px !important;
-    flex: 1 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 6px !important;
+  /* Day body with hour grid lines */
+  .atplay-cal .ap-day-body {
+    position: relative !important;
+    background-color: #fff !important;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      #eee 0px, #eee 1px,
+      transparent 1px, transparent var(--ap-hour-h)
+    ) !important;
+    background-size: 100% var(--ap-hour-h) !important;
+    overflow: visible !important;
   }
 
-  .atplay-cal .ap-empty {
-    color: #ccc !important;
-    font-size: 12px !important;
-    text-align: center !important;
-    padding: 20px 0 !important;
-  }
-
+  /* Event cards (absolutely positioned on desktop) */
   .atplay-cal .ap-card {
-    border-radius: 6px !important;
-    padding: 8px 10px !important;
+    position: absolute !important;
+    left: 3px !important;
+    right: 3px !important;
+    z-index: 2 !important;
+    border-radius: 5px !important;
+    padding: 0 !important;
     cursor: pointer !important;
     transition: transform 0.12s, box-shadow 0.12s !important;
-    position: relative !important;
     border: none !important;
     text-decoration: none !important;
     text-align: left !important;
+    overflow: hidden !important;
   }
   .atplay-cal .ap-card:hover {
-    transform: translateY(-1px) !important;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.12) !important;
+    transform: scale(1.02) !important;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.18) !important;
+    z-index: 3 !important;
   }
-
   .atplay-cal .ap-startline {
     height: 4px !important;
-    border-radius: 2px !important;
-    margin-bottom: 6px !important;
+    margin: 0 !important;
   }
-
-  .atplay-cal .ap-card-body {
+  .atplay-cal .ap-card-inner {
+    padding: 4px 6px 6px !important;
     display: flex !important;
     align-items: flex-start !important;
-    gap: 8px !important;
+    gap: 5px !important;
   }
-
   .atplay-cal .ap-icon {
     flex-shrink: 0 !important;
-    width: 28px !important;
-    height: 28px !important;
+    width: 22px !important;
+    height: 22px !important;
   }
   .atplay-cal .ap-icon svg {
-    width: 28px !important;
-    height: 28px !important;
+    width: 22px !important;
+    height: 22px !important;
     display: block !important;
   }
-
   .atplay-cal .ap-info {
     flex: 1 !important;
     min-width: 0 !important;
   }
-
   .atplay-cal .ap-ev-name {
-    font-size: 12px !important;
+    font-size: 11px !important;
     font-weight: 700 !important;
-    line-height: 1.3 !important;
+    line-height: 1.2 !important;
     color: #333 !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
-    display: -webkit-box !important;
-    -webkit-line-clamp: 2 !important;
-    -webkit-box-orient: vertical !important;
+    white-space: nowrap !important;
     font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
     text-transform: none !important;
     text-decoration: none !important;
   }
-
   .atplay-cal .ap-ev-time {
-    font-size: 11px !important;
+    font-size: 10px !important;
     color: #777 !important;
-    margin-top: 2px !important;
+    margin-top: 1px !important;
     font-weight: 400 !important;
     font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
     text-transform: none !important;
+    line-height: 1.2 !important;
   }
 
-  /* Modal */
+  /* ---- Modal ---- */
   .atplay-cal .ap-overlay {
     position: fixed !important;
     inset: 0 !important;
@@ -270,7 +300,6 @@
     opacity: 1 !important;
     pointer-events: auto !important;
   }
-
   .atplay-cal .ap-modal {
     background: #fff !important;
     border-radius: 12px !important;
@@ -285,23 +314,19 @@
   .atplay-cal .ap-overlay.active .ap-modal {
     transform: translateY(0) !important;
   }
-
   .atplay-cal .ap-modal-bar {
     height: 6px !important;
     border-radius: 12px 12px 0 0 !important;
   }
-
   .atplay-cal .ap-modal-body {
     padding: 24px !important;
   }
-
   .atplay-cal .ap-modal-hdr {
     display: flex !important;
     align-items: flex-start !important;
     gap: 14px !important;
     margin-bottom: 20px !important;
   }
-
   .atplay-cal .ap-modal-icon {
     flex-shrink: 0 !important;
     width: 44px !important;
@@ -312,7 +337,6 @@
     height: 44px !important;
     display: block !important;
   }
-
   .atplay-cal .ap-modal-title {
     font-size: 20px !important;
     font-weight: 700 !important;
@@ -324,7 +348,6 @@
     margin: 0 !important;
     border: none !important;
   }
-
   .atplay-cal .ap-detail {
     display: flex !important;
     align-items: flex-start !important;
@@ -354,10 +377,7 @@
     color: var(--ap-color-2) !important;
     text-decoration: none !important;
   }
-  .atplay-cal .ap-detail-val a:hover {
-    text-decoration: underline !important;
-  }
-
+  .atplay-cal .ap-detail-val a:hover { text-decoration: underline !important; }
   .atplay-cal .ap-modal-close {
     display: block !important;
     width: 100% !important;
@@ -371,7 +391,6 @@
     font-weight: 600 !important;
     color: #666 !important;
     cursor: pointer !important;
-    transition: background 0.15s !important;
     text-transform: none !important;
     letter-spacing: normal !important;
     text-decoration: none !important;
@@ -380,6 +399,7 @@
   }
   .atplay-cal .ap-modal-close:hover { background: #eee !important; }
 
+  /* ---- Legend ---- */
   .atplay-cal .ap-legend {
     padding: 10px 24px !important;
     background: #fff !important;
@@ -406,7 +426,7 @@
     flex-shrink: 0 !important;
   }
 
-  /* Mobile: stack days vertically */
+  /* ---- Mobile: stack days, no time grid ---- */
   @media (max-width: 768px) {
     .atplay-cal .ap-header {
       padding: 12px 16px !important;
@@ -414,40 +434,53 @@
       text-align: center !important;
     }
     .atplay-cal .ap-header h1 { width: 100% !important; }
-
     .atplay-cal .ap-week-label { min-width: auto !important; font-size: 14px !important; }
     .atplay-cal .ap-week-nav button { padding: 6px 10px !important; font-size: 12px !important; }
 
-    .atplay-cal .ap-grid {
-      grid-template-columns: 1fr !important;
-      gap: 0 !important;
+    .atplay-cal .ap-timetable {
+      display: block !important;
       background: transparent !important;
     }
-
-    .atplay-cal .ap-day {
+    .atplay-cal .ap-time-col { display: none !important; }
+    .atplay-cal .ap-day-col {
+      display: block !important;
       border-bottom: 1px solid #e0e0e0 !important;
-      min-height: auto !important;
+      border-left: none !important;
     }
-    .atplay-cal .ap-day.mobile-hidden { display: none !important; }
-
+    .atplay-cal .ap-day-col.mobile-hidden { display: none !important; }
     .atplay-cal .ap-day-hdr {
       text-align: left !important;
       padding: 14px 16px 8px !important;
       display: flex !important;
+      flex-direction: row !important;
       align-items: baseline !important;
       gap: 8px !important;
       border-bottom: none !important;
+      min-height: auto !important;
     }
     .atplay-cal .ap-day-name { font-size: 13px !important; }
-    .atplay-cal .ap-day-num { font-size: 16px !important; }
-
-    .atplay-cal .ap-events { padding: 4px 12px 14px !important; }
-
-    .atplay-cal .ap-card { padding: 10px 12px !important; }
-    .atplay-cal .ap-ev-name { font-size: 14px !important; }
-    .atplay-cal .ap-ev-time { font-size: 12px !important; }
+    .atplay-cal .ap-day-num { font-size: 16px !important; margin-top: 0 !important; }
+    .atplay-cal .ap-day-body {
+      height: auto !important;
+      position: static !important;
+      background-image: none !important;
+      background-color: #fff !important;
+      padding: 4px 12px 14px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 6px !important;
+    }
+    .atplay-cal .ap-card {
+      position: static !important;
+      left: auto !important;
+      right: auto !important;
+    }
+    .atplay-cal .ap-card-inner { padding: 8px 10px !important; gap: 8px !important; }
     .atplay-cal .ap-icon { width: 32px !important; height: 32px !important; }
     .atplay-cal .ap-icon svg { width: 32px !important; height: 32px !important; }
+    .atplay-cal .ap-ev-name { font-size: 14px !important; white-space: normal !important; }
+    .atplay-cal .ap-ev-time { font-size: 12px !important; }
+    .atplay-cal .ap-startline { height: 4px !important; }
 
     .atplay-cal .ap-modal {
       width: 100% !important;
@@ -457,7 +490,6 @@
       min-height: 100vh !important;
     }
     .atplay-cal .ap-modal-body { padding: 20px 16px !important; }
-
     .atplay-cal .ap-legend { padding: 10px 16px !important; justify-content: center !important; }
   }
 </style>
@@ -487,30 +519,33 @@
 </div>
 
 <script>
-const CONFIG = {
+var CONFIG = {
   CALENDAR_ID: 'c_ade5d17214381af99c90f185a13faba2bbbc86b080a1e69c95aeaf90aa9fce59@group.calendar.google.com',
   API_KEY: '',
   TIMEZONE: 'America/New_York',
   MOBILE_BREAKPOINT: 768,
+  HOUR_HEIGHT: 60,
+  START_HOUR: 8,
+  END_HOUR: 18,
 };
 
-const ICAL_URL = 'https://calendar.google.com/calendar/ical/'
+var ICAL_URL = 'https://calendar.google.com/calendar/ical/'
   + encodeURIComponent(CONFIG.CALENDAR_ID) + '/public/basic.ics';
 
-const CORS_PROXIES = [
-  url => 'https://corsproxy.io/?' + encodeURIComponent(url),
-  url => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
-  url => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url),
+var CORS_PROXIES = [
+  function(u) { return 'https://corsproxy.io/?' + encodeURIComponent(u); },
+  function(u) { return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u); },
+  function(u) { return 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u); },
 ];
 
-const PALETTE = [
+var PALETTE = [
   { color: '#E8943A', bg: '#FDF3E7' },
   { color: '#7BAED6', bg: '#EBF3FA' },
   { color: '#E84B8A', bg: '#FDEAF2' },
   { color: '#6BAE73', bg: '#EDF7EE' },
 ];
 
-const ICON_MAP = [
+var ICON_MAP = [
   { keywords: ['yoga', 'stretch', 'mindful', 'meditation', 'zen'], icon: 'yoga' },
   { keywords: ['dance', 'ballet', 'hip hop', 'hiphop', 'jazz', 'tap', 'salsa', 'movement'], icon: 'dance' },
   { keywords: ['karate', 'martial', 'judo', 'taekwondo', 'kung fu', 'aikido', 'capoeira'], icon: 'martial' },
@@ -532,190 +567,121 @@ const ICON_MAP = [
 ];
 
 function getSvgIcon(type, fillColor) {
-  const c = fillColor;
-  const icons = {
-    yoga: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="8" r="4" fill="${c}"/><path d="M20 14c-2 0-3.5 1-4.5 2.5L10 22l2.5 1.5 4-3.5v4l-5.5 8 2.5 1.5L18 28l2 3 2-3 4.5 5.5 2.5-1.5-5.5-8v-4l4 3.5L30 22l-5.5-5.5C23.5 15 22 14 20 14z" fill="${c}"/></svg>`,
-    dance: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="22" cy="7" r="4" fill="${c}"/><path d="M18 13c-1 0-2 .5-2.5 1.5L12 22h3l2-4 1 3-4 7 2.5 1.5L20 24l2 5h3l-3-8 3-4c1-1.5.5-3-.5-4s-3-1-4 0z" fill="${c}"/><path d="M26 16c1 2 2 4 1 6l-1 3h3l1-3c1-3 0-5-1-7l-3 1z" fill="${c}" opacity="0.7"/></svg>`,
-    martial: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="7" r="4" fill="${c}"/><path d="M20 13c-2 0-3 1-3.5 2L14 20l3 1 2-3v4l-5 8 2.5 1.5L20 27l3.5 4.5L26 30l-5-8v-4l4 4 6-1-1-2.5-5-3c-1-1-2.5-2.5-5-2.5z" fill="${c}"/></svg>`,
-    swim: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="16" r="3.5" fill="${c}"/><path d="M16 18l8-3 4 2 2-2.5-5-3c-1-.5-2-.3-3 .2l-4 2-2.5-1.5L14 14l2 4z" fill="${c}"/><path d="M6 26q2-2 5 0t5 0 5 0 5 0 5 0" stroke="${c}" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M6 31q2-2 5 0t5 0 5 0 5 0 5 0" stroke="${c}" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.5"/></svg>`,
-    music: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M28 6v22" stroke="${c}" stroke-width="2.5"/><path d="M12 10v20" stroke="${c}" stroke-width="2.5"/><rect x="12" y="6" width="16" height="8" rx="2" fill="${c}" opacity="0.3"/><circle cx="9" cy="30" r="4" fill="${c}"/><circle cx="25" cy="28" r="4" fill="${c}"/></svg>`,
-    art: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 4C11 4 4 11 4 20s7 16 16 16c1.5 0 2.5-1 2.5-2.5 0-.6-.2-1.2-.6-1.6-.3-.4-.5-1-.5-1.6 0-1.4 1.1-2.5 2.5-2.5H27c5 0 9-4 9-9 0-8.3-7.2-14.8-16-14.8z" fill="${c}" opacity="0.15"/><circle cx="14" cy="14" r="3" fill="${c}"/><circle cx="24" cy="12" r="3" fill="${c}" opacity="0.7"/><circle cx="28" cy="20" r="3" fill="${c}" opacity="0.5"/><circle cx="13" cy="23" r="3" fill="${c}" opacity="0.8"/></svg>`,
-    cook: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="20" cy="12" rx="12" ry="5" fill="${c}" opacity="0.3"/><path d="M8 12v4c0 6.6 5.4 12 12 12s12-5.4 12-12v-4" stroke="${c}" stroke-width="2.5" fill="none"/><path d="M20 2v6M15 3l2 5M25 3l-2 5" stroke="${c}" stroke-width="2" stroke-linecap="round"/></svg>`,
-    science: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16 4h8v12l8 14c1 2 0 4-2 4H10c-2 0-3-2-2-4l8-14V4z" fill="${c}" opacity="0.15" stroke="${c}" stroke-width="2"/><path d="M16 4h8" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/><circle cx="18" cy="28" r="2" fill="${c}"/><circle cx="23" cy="25" r="1.5" fill="${c}" opacity="0.6"/><circle cx="20" cy="31" r="1.5" fill="${c}" opacity="0.8"/></svg>`,
-    sports: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="13" stroke="${c}" stroke-width="2.5" fill="${c}" fill-opacity="0.12"/><path d="M20 7v26M7 20h26" stroke="${c}" stroke-width="2"/><path d="M10 10c3 3 7 5 10 5s7-2 10-5M10 30c3-3 7-5 10-5s7 2 10 5" stroke="${c}" stroke-width="2" fill="none"/></svg>`,
-    climb: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="8" r="4" fill="${c}"/><path d="M20 14c-1.5 0-2.5.8-3 2l-3 7h3l2-4 1 6-5 7 2.5 1.5L20 28l2.5 5.5L25 32l-3-7v-6l3 4 3-1-1-2-4-4c-.8-1.2-1.8-2-3-2z" fill="${c}"/></svg>`,
-    theater: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 8h13v16c0 3.5-2.9 6.5-6.5 6.5S6 27.5 6 24V8z" fill="${c}" opacity="0.25"/><circle cx="10" cy="16" r="1.5" fill="${c}"/><circle cx="15" cy="16" r="1.5" fill="${c}"/><path d="M9 21c1 1.5 3.5 1.5 5 0" stroke="${c}" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M21 6h13v16c0 3.5-2.9 6.5-6.5 6.5S21 25.5 21 22V6z" fill="${c}" opacity="0.4"/><circle cx="25" cy="14" r="1.5" fill="${c}"/><circle cx="30" cy="14" r="1.5" fill="${c}"/><path d="M24.5 19.5c1-1.5 3.5-1.5 5 0" stroke="${c}" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>`,
-    book: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 8c3-2 7-2 14 0v24c-7-2-11-2-14 0V8z" fill="${c}" opacity="0.2"/><path d="M34 8c-3-2-7-2-14 0v24c7-2 11-2 14 0V8z" fill="${c}" opacity="0.35"/><path d="M20 8v24" stroke="${c}" stroke-width="1.5"/></svg>`,
-    nature: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 4L8 24h8l-4 12h16l-4-12h8L20 4z" fill="${c}" opacity="0.3"/><rect x="18" y="28" width="4" height="8" fill="${c}" opacity="0.5"/><path d="M20 4L12 18h5l-3 8h12l-3-8h5L20 4z" fill="${c}" opacity="0.2"/></svg>`,
-    game: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="6" width="28" height="28" rx="3" fill="${c}" opacity="0.15"/><rect x="6" y="6" width="14" height="14" fill="${c}" opacity="0.25"/><rect x="20" y="20" width="14" height="14" rx="0" fill="${c}" opacity="0.25"/><circle cx="13" cy="27" r="3" fill="${c}"/><circle cx="27" cy="13" r="3" fill="${c}"/></svg>`,
-    fitness: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="16" width="6" height="8" rx="2" fill="${c}"/><rect x="30" y="16" width="6" height="8" rx="2" fill="${c}"/><rect x="8" y="13" width="5" height="14" rx="2" fill="${c}" opacity="0.6"/><rect x="27" y="13" width="5" height="14" rx="2" fill="${c}" opacity="0.6"/><rect x="13" y="18" width="14" height="4" rx="1" fill="${c}" opacity="0.4"/></svg>`,
-    play: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="20" cy="20" r="15" fill="${c}" opacity="0.15"/><path d="M28 20l-12 8V12l12 8z" fill="${c}"/></svg>`,
-    camera: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 14a3 3 0 013-3h5l2-3h12l2 3h5a3 3 0 013 3v16a3 3 0 01-3 3H7a3 3 0 01-3-3V14z" fill="${c}" opacity="0.2"/><circle cx="20" cy="21" r="7" stroke="${c}" stroke-width="2.5" fill="none"/><circle cx="20" cy="21" r="4" fill="${c}" opacity="0.4"/></svg>`,
-    build: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="6" y="22" width="10" height="10" rx="1" fill="${c}" opacity="0.5"/><rect x="15" y="14" width="10" height="18" rx="1" fill="${c}" opacity="0.35"/><rect x="24" y="8" width="10" height="24" rx="1" fill="${c}" opacity="0.5"/></svg>`,
-    default: `<svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 4l4.5 9.2 10.1 1.5-7.3 7.1 1.7 10.1L20 27l-9 4.8 1.7-10.1-7.3-7.1 10.1-1.5L20 4z" fill="${c}"/></svg>`,
+  var c = fillColor;
+  var icons = {
+    yoga: '<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="8" r="4" fill="'+c+'"/><path d="M20 14c-2 0-3.5 1-4.5 2.5L10 22l2.5 1.5 4-3.5v4l-5.5 8 2.5 1.5L18 28l2 3 2-3 4.5 5.5 2.5-1.5-5.5-8v-4l4 3.5L30 22l-5.5-5.5C23.5 15 22 14 20 14z" fill="'+c+'"/></svg>',
+    dance: '<svg viewBox="0 0 40 40" fill="none"><circle cx="22" cy="7" r="4" fill="'+c+'"/><path d="M18 13c-1 0-2 .5-2.5 1.5L12 22h3l2-4 1 3-4 7 2.5 1.5L20 24l2 5h3l-3-8 3-4c1-1.5.5-3-.5-4s-3-1-4 0z" fill="'+c+'"/><path d="M26 16c1 2 2 4 1 6l-1 3h3l1-3c1-3 0-5-1-7l-3 1z" fill="'+c+'" opacity="0.7"/></svg>',
+    martial: '<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="7" r="4" fill="'+c+'"/><path d="M20 13c-2 0-3 1-3.5 2L14 20l3 1 2-3v4l-5 8 2.5 1.5L20 27l3.5 4.5L26 30l-5-8v-4l4 4 6-1-1-2.5-5-3c-1-1-2.5-2.5-5-2.5z" fill="'+c+'"/></svg>',
+    swim: '<svg viewBox="0 0 40 40" fill="none"><circle cx="12" cy="16" r="3.5" fill="'+c+'"/><path d="M16 18l8-3 4 2 2-2.5-5-3c-1-.5-2-.3-3 .2l-4 2-2.5-1.5L14 14l2 4z" fill="'+c+'"/><path d="M6 26q2-2 5 0t5 0 5 0 5 0 5 0" stroke="'+c+'" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M6 31q2-2 5 0t5 0 5 0 5 0 5 0" stroke="'+c+'" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.5"/></svg>',
+    music: '<svg viewBox="0 0 40 40" fill="none"><path d="M28 6v22" stroke="'+c+'" stroke-width="2.5"/><path d="M12 10v20" stroke="'+c+'" stroke-width="2.5"/><rect x="12" y="6" width="16" height="8" rx="2" fill="'+c+'" opacity="0.3"/><circle cx="9" cy="30" r="4" fill="'+c+'"/><circle cx="25" cy="28" r="4" fill="'+c+'"/></svg>',
+    art: '<svg viewBox="0 0 40 40" fill="none"><path d="M20 4C11 4 4 11 4 20s7 16 16 16c1.5 0 2.5-1 2.5-2.5 0-.6-.2-1.2-.6-1.6-.3-.4-.5-1-.5-1.6 0-1.4 1.1-2.5 2.5-2.5H27c5 0 9-4 9-9 0-8.3-7.2-14.8-16-14.8z" fill="'+c+'" opacity="0.15"/><circle cx="14" cy="14" r="3" fill="'+c+'"/><circle cx="24" cy="12" r="3" fill="'+c+'" opacity="0.7"/><circle cx="28" cy="20" r="3" fill="'+c+'" opacity="0.5"/><circle cx="13" cy="23" r="3" fill="'+c+'" opacity="0.8"/></svg>',
+    cook: '<svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="12" rx="12" ry="5" fill="'+c+'" opacity="0.3"/><path d="M8 12v4c0 6.6 5.4 12 12 12s12-5.4 12-12v-4" stroke="'+c+'" stroke-width="2.5" fill="none"/><path d="M20 2v6M15 3l2 5M25 3l-2 5" stroke="'+c+'" stroke-width="2" stroke-linecap="round"/></svg>',
+    science: '<svg viewBox="0 0 40 40" fill="none"><path d="M16 4h8v12l8 14c1 2 0 4-2 4H10c-2 0-3-2-2-4l8-14V4z" fill="'+c+'" opacity="0.15" stroke="'+c+'" stroke-width="2"/><path d="M16 4h8" stroke="'+c+'" stroke-width="2.5" stroke-linecap="round"/><circle cx="18" cy="28" r="2" fill="'+c+'"/><circle cx="23" cy="25" r="1.5" fill="'+c+'" opacity="0.6"/><circle cx="20" cy="31" r="1.5" fill="'+c+'" opacity="0.8"/></svg>',
+    sports: '<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" stroke="'+c+'" stroke-width="2.5" fill="'+c+'" fill-opacity="0.12"/><path d="M20 7v26M7 20h26" stroke="'+c+'" stroke-width="2"/><path d="M10 10c3 3 7 5 10 5s7-2 10-5M10 30c3-3 7-5 10-5s7 2 10 5" stroke="'+c+'" stroke-width="2" fill="none"/></svg>',
+    climb: '<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="8" r="4" fill="'+c+'"/><path d="M20 14c-1.5 0-2.5.8-3 2l-3 7h3l2-4 1 6-5 7 2.5 1.5L20 28l2.5 5.5L25 32l-3-7v-6l3 4 3-1-1-2-4-4c-.8-1.2-1.8-2-3-2z" fill="'+c+'"/></svg>',
+    theater: '<svg viewBox="0 0 40 40" fill="none"><path d="M6 8h13v16c0 3.5-2.9 6.5-6.5 6.5S6 27.5 6 24V8z" fill="'+c+'" opacity="0.25"/><circle cx="10" cy="16" r="1.5" fill="'+c+'"/><circle cx="15" cy="16" r="1.5" fill="'+c+'"/><path d="M9 21c1 1.5 3.5 1.5 5 0" stroke="'+c+'" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M21 6h13v16c0 3.5-2.9 6.5-6.5 6.5S21 25.5 21 22V6z" fill="'+c+'" opacity="0.4"/><circle cx="25" cy="14" r="1.5" fill="'+c+'"/><circle cx="30" cy="14" r="1.5" fill="'+c+'"/><path d="M24.5 19.5c1-1.5 3.5-1.5 5 0" stroke="'+c+'" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>',
+    book: '<svg viewBox="0 0 40 40" fill="none"><path d="M6 8c3-2 7-2 14 0v24c-7-2-11-2-14 0V8z" fill="'+c+'" opacity="0.2"/><path d="M34 8c-3-2-7-2-14 0v24c7-2 11-2 14 0V8z" fill="'+c+'" opacity="0.35"/><path d="M20 8v24" stroke="'+c+'" stroke-width="1.5"/></svg>',
+    nature: '<svg viewBox="0 0 40 40" fill="none"><path d="M20 4L8 24h8l-4 12h16l-4-12h8L20 4z" fill="'+c+'" opacity="0.3"/><rect x="18" y="28" width="4" height="8" fill="'+c+'" opacity="0.5"/></svg>',
+    game: '<svg viewBox="0 0 40 40" fill="none"><rect x="6" y="6" width="28" height="28" rx="3" fill="'+c+'" opacity="0.15"/><rect x="6" y="6" width="14" height="14" fill="'+c+'" opacity="0.25"/><rect x="20" y="20" width="14" height="14" fill="'+c+'" opacity="0.25"/><circle cx="13" cy="27" r="3" fill="'+c+'"/><circle cx="27" cy="13" r="3" fill="'+c+'"/></svg>',
+    fitness: '<svg viewBox="0 0 40 40" fill="none"><rect x="4" y="16" width="6" height="8" rx="2" fill="'+c+'"/><rect x="30" y="16" width="6" height="8" rx="2" fill="'+c+'"/><rect x="8" y="13" width="5" height="14" rx="2" fill="'+c+'" opacity="0.6"/><rect x="27" y="13" width="5" height="14" rx="2" fill="'+c+'" opacity="0.6"/><rect x="13" y="18" width="14" height="4" rx="1" fill="'+c+'" opacity="0.4"/></svg>',
+    play: '<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="15" fill="'+c+'" opacity="0.15"/><path d="M28 20l-12 8V12l12 8z" fill="'+c+'"/></svg>',
+    camera: '<svg viewBox="0 0 40 40" fill="none"><path d="M4 14a3 3 0 013-3h5l2-3h12l2 3h5a3 3 0 013 3v16a3 3 0 01-3 3H7a3 3 0 01-3-3V14z" fill="'+c+'" opacity="0.2"/><circle cx="20" cy="21" r="7" stroke="'+c+'" stroke-width="2.5" fill="none"/><circle cx="20" cy="21" r="4" fill="'+c+'" opacity="0.4"/></svg>',
+    build: '<svg viewBox="0 0 40 40" fill="none"><rect x="6" y="22" width="10" height="10" rx="1" fill="'+c+'" opacity="0.5"/><rect x="15" y="14" width="10" height="18" rx="1" fill="'+c+'" opacity="0.35"/><rect x="24" y="8" width="10" height="24" rx="1" fill="'+c+'" opacity="0.5"/></svg>',
+    default: '<svg viewBox="0 0 40 40" fill="none"><path d="M20 4l4.5 9.2 10.1 1.5-7.3 7.1 1.7 10.1L20 27l-9 4.8 1.7-10.1-7.3-7.1 10.1-1.5L20 4z" fill="'+c+'"/></svg>',
   };
   return icons[type] || icons.default;
 }
 
-function getIconType(eventName) {
-  const lower = eventName.toLowerCase();
-  for (const entry of ICON_MAP) {
-    if (entry.keywords.some(kw => lower.includes(kw))) return entry.icon;
+function getIconType(name) {
+  var lower = name.toLowerCase();
+  for (var i = 0; i < ICON_MAP.length; i++) {
+    for (var j = 0; j < ICON_MAP[i].keywords.length; j++) {
+      if (lower.indexOf(ICON_MAP[i].keywords[j]) !== -1) return ICON_MAP[i].icon;
+    }
   }
   return 'default';
 }
 
-const colorAssignments = {};
-let nextColorIndex = 0;
-let currentEvents = [];
+var colorAssignments = {};
+var nextColorIndex = 0;
+var currentEvents = [];
 
-function getColorForClass(className) {
-  const key = className.trim().toLowerCase();
+function getColorForClass(name) {
+  var key = name.trim().toLowerCase();
   if (colorAssignments[key] !== undefined) return colorAssignments[key];
-  const maxColors = PALETTE.length - 1;
-  colorAssignments[key] = nextColorIndex % maxColors;
+  var max = PALETTE.length - 1;
+  colorAssignments[key] = nextColorIndex % max;
   nextColorIndex++;
-  if (nextColorIndex > maxColors * 2 && Object.keys(colorAssignments).length > maxColors) {
-    const keys = Object.keys(colorAssignments);
-    const lastKey = keys[keys.length - 1];
-    if (colorAssignments[lastKey] < maxColors) {
-      colorAssignments[lastKey] = 3;
-    }
+  if (nextColorIndex > max * 2 && Object.keys(colorAssignments).length > max) {
+    var keys = Object.keys(colorAssignments);
+    if (colorAssignments[keys[keys.length - 1]] < max) colorAssignments[keys[keys.length - 1]] = 3;
   }
   return colorAssignments[key];
 }
 
-let currentWeekStart = getWeekStart(new Date());
+var currentWeekStart = getWeekStart(new Date());
 
-function getWeekStart(date) {
-  const d = new Date(date);
-  d.setDate(d.getDate() - d.getDay());
-  d.setHours(0, 0, 0, 0);
-  return d;
-}
-
-function addDays(date, days) {
-  const d = new Date(date);
-  d.setDate(d.getDate() + days);
-  return d;
-}
-
-function formatDate(date) {
-  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
-
-function formatDateFull(date) {
-  return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
-}
-
-function formatTime(dateStr) {
-  const d = new Date(dateStr);
-  return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
-}
-
-function formatTimeRange(start, end) {
-  return formatTime(start) + ' – ' + formatTime(end);
-}
-
-function isSameDay(d1, d2) {
-  return d1.getFullYear() === d2.getFullYear() && d1.getMonth() === d2.getMonth() && d1.getDate() === d2.getDate();
-}
-
-function isToday(date) {
-  return isSameDay(date, new Date());
-}
+function getWeekStart(d) { var r = new Date(d); r.setDate(r.getDate() - r.getDay()); r.setHours(0,0,0,0); return r; }
+function addDays(d, n) { var r = new Date(d); r.setDate(r.getDate() + n); return r; }
+function formatDate(d) { return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
+function formatDateFull(d) { return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }); }
+function formatTime(s) { return new Date(s).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }); }
+function formatTimeRange(a, b) { return formatTime(a) + ' – ' + formatTime(b); }
+function isSameDay(a, b) { return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
+function isToday(d) { return isSameDay(d, new Date()); }
 
 function updateWeekLabel() {
-  const end = addDays(currentWeekStart, 6);
-  document.getElementById('weekLabel').textContent =
-    formatDate(currentWeekStart) + ' – ' + formatDate(end) + ', ' + end.getFullYear();
+  var end = addDays(currentWeekStart, 6);
+  document.getElementById('weekLabel').textContent = formatDate(currentWeekStart) + ' – ' + formatDate(end) + ', ' + end.getFullYear();
 }
-
-function navigateWeek(dir) {
-  currentWeekStart = addDays(currentWeekStart, dir * 7);
-  loadCalendar();
-}
-
-function navigateToday() {
-  currentWeekStart = getWeekStart(new Date());
-  loadCalendar();
-}
+function navigateWeek(dir) { currentWeekStart = addDays(currentWeekStart, dir * 7); loadCalendar(); }
+function navigateToday() { currentWeekStart = getWeekStart(new Date()); loadCalendar(); }
 
 /* ---- iCal parsing ---- */
-
-function parseICalDate(str) {
-  if (!str) return null;
-  str = str.replace(/^.*:/, '');
-  if (str.includes('T')) {
-    var y = str.slice(0,4), m = str.slice(4,6), d = str.slice(6,8);
-    var h = str.slice(9,11), mi = str.slice(11,13), s = str.slice(13,15);
-    var iso = y + '-' + m + '-' + d + 'T' + h + ':' + mi + ':' + s;
-    if (str.endsWith('Z')) return new Date(iso + 'Z');
-    return new Date(iso);
+function parseICalDate(s) {
+  if (!s) return null;
+  s = s.replace(/^.*:/, '');
+  if (s.indexOf('T') !== -1) {
+    var iso = s.slice(0,4)+'-'+s.slice(4,6)+'-'+s.slice(6,8)+'T'+s.slice(9,11)+':'+s.slice(11,13)+':'+s.slice(13,15);
+    return new Date(s.charAt(s.length-1)==='Z' ? iso+'Z' : iso);
   }
-  var y2 = str.slice(0,4), m2 = str.slice(4,6), d2 = str.slice(6,8);
-  return new Date(y2 + '-' + m2 + '-' + d2 + 'T00:00:00');
-}
-
-function unescapeIcal(str) {
-  return str.replace(/\\n/g, '\n').replace(/\\,/g, ',').replace(/\\\\/g, '\\');
+  return new Date(s.slice(0,4)+'-'+s.slice(4,6)+'-'+s.slice(6,8)+'T00:00:00');
 }
 
 function parseICal(text) {
-  var lines = [];
-  var rawLines = text.split(/\r?\n/);
-  for (var i = 0; i < rawLines.length; i++) {
-    var raw = rawLines[i];
-    if (raw.charAt(0) === ' ' || raw.charAt(0) === '\t') {
-      if (lines.length) lines[lines.length - 1] += raw.slice(1);
-    } else {
-      lines.push(raw);
-    }
+  var lines = [], raw = text.split(/\r?\n/);
+  for (var i = 0; i < raw.length; i++) {
+    if ((raw[i].charAt(0)===' '||raw[i].charAt(0)==='\t') && lines.length) lines[lines.length-1] += raw[i].slice(1);
+    else lines.push(raw[i]);
   }
-  var events = [];
-  var inEvent = false, ev = {};
+  var events = [], inEv = false, ev = {};
   for (var j = 0; j < lines.length; j++) {
-    var line = lines[j];
-    if (line === 'BEGIN:VEVENT') { inEvent = true; ev = {}; continue; }
-    if (line === 'END:VEVENT') { inEvent = false; if (ev.dtstart) events.push(ev); continue; }
-    if (!inEvent) continue;
-    var ci = line.indexOf(':');
-    if (ci < 0) continue;
-    var key = line.slice(0, ci).split(';')[0].toUpperCase();
-    var val = line.slice(ci + 1);
-    if (key === 'SUMMARY') ev.summary = unescapeIcal(val);
-    else if (key === 'DTSTART') ev.dtstart = parseICalDate(val);
-    else if (key === 'DTEND') ev.dtend = parseICalDate(val);
-    else if (key === 'DESCRIPTION') ev.description = unescapeIcal(val);
-    else if (key === 'LOCATION') ev.location = unescapeIcal(val);
-    else if (key === 'UID') ev.uid = val;
+    var ln = lines[j];
+    if (ln==='BEGIN:VEVENT') { inEv=true; ev={}; continue; }
+    if (ln==='END:VEVENT') { inEv=false; if (ev.dtstart) events.push(ev); continue; }
+    if (!inEv) continue;
+    var ci = ln.indexOf(':'); if (ci<0) continue;
+    var key = ln.slice(0,ci).split(';')[0].toUpperCase(), val = ln.slice(ci+1);
+    if (key==='SUMMARY') ev.summary = val.replace(/\\n/g,'\n').replace(/\\,/g,',').replace(/\\\\/g,'\\');
+    else if (key==='DTSTART') ev.dtstart = parseICalDate(val);
+    else if (key==='DTEND') ev.dtend = parseICalDate(val);
+    else if (key==='DESCRIPTION') ev.description = val.replace(/\\n/g,'\n').replace(/\\,/g,',').replace(/\\\\/g,'\\');
+    else if (key==='LOCATION') ev.location = val.replace(/\\n/g,'\n').replace(/\\,/g,',').replace(/\\\\/g,'\\');
   }
   return events;
 }
 
-function normalizeEvents(icalEvents, weekStart, weekEnd) {
-  return icalEvents
-    .filter(function(e) {
-      if (!e.dtstart) return false;
-      var isAllDay = e.dtstart.getHours() === 0 && e.dtstart.getMinutes() === 0
-        && e.dtend && e.dtend.getHours() === 0 && e.dtend.getMinutes() === 0
-        && (e.dtend - e.dtstart) >= 86400000;
-      if (isAllDay) return false;
-      return e.dtstart >= weekStart && e.dtstart < weekEnd;
-    })
-    .sort(function(a, b) { return a.dtstart - b.dtstart; })
-    .map(function(e) {
-      return {
-        summary: e.summary || 'Untitled',
-        start: { dateTime: e.dtstart.toISOString() },
-        end: { dateTime: (e.dtend || new Date(e.dtstart.getTime() + 3600000)).toISOString() },
-        description: e.description || '',
-        location: e.location || '',
-        htmlLink: '',
-      };
-    });
+function normalizeEvents(ical, ws, we) {
+  return ical.filter(function(e) {
+    if (!e.dtstart) return false;
+    var allDay = e.dtstart.getHours()===0 && e.dtstart.getMinutes()===0 && e.dtend && e.dtend.getHours()===0 && e.dtend.getMinutes()===0 && (e.dtend-e.dtstart)>=86400000;
+    return !allDay && e.dtstart >= ws && e.dtstart < we;
+  }).sort(function(a,b){return a.dtstart-b.dtstart;}).map(function(e){
+    return { summary: e.summary||'Untitled', start:{dateTime:e.dtstart.toISOString()}, end:{dateTime:(e.dtend||new Date(e.dtstart.getTime()+3600000)).toISOString()}, description:e.description||'', location:e.location||'', htmlLink:'' };
+  });
 }
 
+/* ---- Fetch strategies ---- */
 async function fetchViaICal() {
   var errors = [];
   for (var i = 0; i < CORS_PROXIES.length; i++) {
@@ -723,72 +689,56 @@ async function fetchViaICal() {
       var res = await fetch(CORS_PROXIES[i](ICAL_URL));
       if (!res.ok) throw new Error('HTTP ' + res.status);
       var text = await res.text();
-      if (!text.includes('BEGIN:VCALENDAR')) throw new Error('Not valid iCal (got: ' + text.slice(0, 80) + ')');
-      var weekEnd = addDays(currentWeekStart, 7);
-      return normalizeEvents(parseICal(text), currentWeekStart, weekEnd);
-    } catch (e) { errors.push('Proxy ' + (i+1) + ': ' + e.message); }
+      if (text.indexOf('BEGIN:VCALENDAR') === -1) throw new Error('Not iCal');
+      return normalizeEvents(parseICal(text), currentWeekStart, addDays(currentWeekStart, 7));
+    } catch (e) { errors.push('Proxy '+(i+1)+': '+e.message); }
   }
   throw new Error(errors.join(' | '));
 }
 
 async function fetchViaGoogleEmbed() {
-  var timeMin = currentWeekStart.toISOString();
-  var timeMax = addDays(currentWeekStart, 7).toISOString();
   var calId = encodeURIComponent(CONFIG.CALENDAR_ID);
-  var url = 'https://www.googleapis.com/calendar/v3/calendars/' + calId + '/events?'
-    + 'key=AIzaSyBNlYH01_9Hc5S1J9vuFmu2nUqBZJNAXxs'
-    + '&timeMin=' + timeMin + '&timeMax=' + timeMax
-    + '&singleEvents=true&orderBy=startTime'
-    + '&timeZone=' + CONFIG.TIMEZONE + '&maxResults=250';
+  var url = 'https://www.googleapis.com/calendar/v3/calendars/'+calId+'/events?key=AIzaSyBNlYH01_9Hc5S1J9vuFmu2nUqBZJNAXxs&timeMin='+currentWeekStart.toISOString()+'&timeMax='+addDays(currentWeekStart,7).toISOString()+'&singleEvents=true&orderBy=startTime&timeZone='+CONFIG.TIMEZONE+'&maxResults=250';
   var res = await fetch(url);
-  if (!res.ok) throw new Error('Embed API ' + res.status);
+  if (!res.ok) throw new Error('Embed API '+res.status);
   var data = await res.json();
-  return (data.items || []).filter(function(e) { return e.start && e.start.dateTime; });
+  return (data.items||[]).filter(function(e){return e.start&&e.start.dateTime;});
 }
 
 async function fetchViaAPI() {
   if (!CONFIG.API_KEY) throw new Error('No API key');
-  var timeMin = currentWeekStart.toISOString();
-  var timeMax = addDays(currentWeekStart, 7).toISOString();
   var calId = encodeURIComponent(CONFIG.CALENDAR_ID);
-  var url = 'https://www.googleapis.com/calendar/v3/calendars/' + calId + '/events?'
-    + 'key=' + CONFIG.API_KEY
-    + '&timeMin=' + timeMin + '&timeMax=' + timeMax
-    + '&singleEvents=true&orderBy=startTime'
-    + '&timeZone=' + CONFIG.TIMEZONE + '&maxResults=250';
+  var url = 'https://www.googleapis.com/calendar/v3/calendars/'+calId+'/events?key='+CONFIG.API_KEY+'&timeMin='+currentWeekStart.toISOString()+'&timeMax='+addDays(currentWeekStart,7).toISOString()+'&singleEvents=true&orderBy=startTime&timeZone='+CONFIG.TIMEZONE+'&maxResults=250';
   var res = await fetch(url);
-  if (!res.ok) {
-    var err = await res.json().catch(function() { return {}; });
-    throw new Error((err.error && err.error.message) || 'API ' + res.status);
-  }
+  if (!res.ok) throw new Error('API '+res.status);
   var data = await res.json();
-  return (data.items || []).filter(function(e) { return e.start && e.start.dateTime; });
+  return (data.items||[]).filter(function(e){return e.start&&e.start.dateTime;});
 }
 
 async function fetchEvents() {
   var errors = [];
-  if (CONFIG.API_KEY) {
-    try { return await fetchViaAPI(); } catch (e) { errors.push('API: ' + e.message); }
-  }
-  try { return await fetchViaICal(); } catch (e) { errors.push('iCal: ' + e.message); }
-  try { return await fetchViaGoogleEmbed(); } catch (e) { errors.push('Embed: ' + e.message); }
+  if (CONFIG.API_KEY) { try { return await fetchViaAPI(); } catch(e) { errors.push('API: '+e.message); } }
+  try { return await fetchViaICal(); } catch(e) { errors.push('iCal: '+e.message); }
+  try { return await fetchViaGoogleEmbed(); } catch(e) { errors.push('Embed: '+e.message); }
   throw new Error(errors.join(' | '));
 }
 
 /* ---- Rendering ---- */
-
 function groupByDay(events) {
   var days = [];
-  for (var i = 0; i < 7; i++) {
-    days.push({ date: addDays(currentWeekStart, i), events: [] });
-  }
+  for (var i = 0; i < 7; i++) days.push({ date: addDays(currentWeekStart, i), events: [] });
   for (var j = 0; j < events.length; j++) {
-    var evDate = new Date(events[j].start.dateTime);
-    for (var k = 0; k < days.length; k++) {
-      if (isSameDay(evDate, days[k].date)) { days[k].events.push(events[j]); break; }
-    }
+    var d = new Date(events[j].start.dateTime);
+    for (var k = 0; k < days.length; k++) { if (isSameDay(d, days[k].date)) { days[k].events.push(events[j]); break; } }
   }
   return days;
+}
+
+function hourLabel(h) {
+  if (h === 0) return '12 AM';
+  if (h < 12) return h + ' AM';
+  if (h === 12) return '12 PM';
+  return (h - 12) + ' PM';
 }
 
 function renderCalendar(events) {
@@ -796,44 +746,61 @@ function renderCalendar(events) {
   var root = document.getElementById('calendarRoot');
   var days = groupByDay(events);
   var isMobile = window.innerWidth <= CONFIG.MOBILE_BREAKPOINT;
-  var dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  var html = '<div class="ap-grid">';
+  var dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var H = CONFIG.HOUR_HEIGHT;
+  var totalH = (CONFIG.END_HOUR - CONFIG.START_HOUR) * H;
 
+  var html = '<div class="ap-timetable">';
+
+  // Time gutter column
+  html += '<div class="ap-time-col">';
+  html += '<div class="ap-gutter-corner"></div>';
+  html += '<div class="ap-time-gutter" style="height:'+totalH+'px">';
+  for (var h = CONFIG.START_HOUR; h <= CONFIG.END_HOUR; h++) {
+    var top = (h - CONFIG.START_HOUR) * H;
+    html += '<div class="ap-time-label" style="top:'+top+'px">'+hourLabel(h)+'</div>';
+  }
+  html += '</div></div>';
+
+  // Day columns
   for (var i = 0; i < days.length; i++) {
     var day = days[i];
     var today = isToday(day.date);
     var hasEvents = day.events.length > 0;
-    var cls = 'ap-day' + (today ? ' is-today' : '') + (isMobile && !hasEvents ? ' mobile-hidden' : '');
+    var cls = 'ap-day-col' + (today ? ' is-today' : '') + (isMobile && !hasEvents ? ' mobile-hidden' : '');
 
-    html += '<div class="' + cls + '">';
+    html += '<div class="'+cls+'">';
     html += '<div class="ap-day-hdr">';
-    html += '<div class="ap-day-name">' + dayNames[day.date.getDay()] + '</div>';
-    html += '<div class="ap-day-num">' + day.date.getDate() + '</div>';
-    html += '</div><div class="ap-events">';
+    html += '<div class="ap-day-name">'+dayNames[day.date.getDay()]+'</div>';
+    html += '<div class="ap-day-num">'+day.date.getDate()+'</div>';
+    html += '</div>';
+    html += '<div class="ap-day-body" style="height:'+totalH+'px">';
 
-    if (!hasEvents) {
-      html += '<div class="ap-empty">&mdash;</div>';
-    } else {
-      for (var j = 0; j < day.events.length; j++) {
-        var ev = day.events[j];
-        var gi = events.indexOf(ev);
-        var ci = getColorForClass(ev.summary || 'Event');
-        var pal = PALETTE[ci];
-        var iconType = getIconType(ev.summary || '');
-        var icon = getSvgIcon(iconType, pal.color);
+    for (var j = 0; j < day.events.length; j++) {
+      var ev = day.events[j];
+      var gi = events.indexOf(ev);
+      var ci = getColorForClass(ev.summary || 'Event');
+      var pal = PALETTE[ci];
+      var iconType = getIconType(ev.summary || '');
+      var icon = getSvgIcon(iconType, pal.color);
 
-        html += '<div class="ap-card" data-idx="' + gi + '" style="background:' + pal.bg + '">';
-        html += '<div class="ap-startline" style="background:' + pal.color + '"></div>';
-        html += '<div class="ap-card-body">';
-        html += '<div class="ap-icon">' + icon + '</div>';
-        html += '<div class="ap-info">';
-        html += '<div class="ap-ev-name">' + escapeHtml(ev.summary || 'Untitled') + '</div>';
-        html += '<div class="ap-ev-time">' + formatTimeRange(ev.start.dateTime, ev.end.dateTime) + '</div>';
-        html += '</div></div></div>';
-      }
+      var st = new Date(ev.start.dateTime);
+      var hrs = st.getHours() + st.getMinutes() / 60;
+      var topPx = Math.max(0, Math.min(totalH - 40, (hrs - CONFIG.START_HOUR) * H));
+
+      html += '<div class="ap-card" data-idx="'+gi+'" style="top:'+topPx+'px;background:'+pal.bg+'">';
+      html += '<div class="ap-startline" style="background:'+pal.color+'"></div>';
+      html += '<div class="ap-card-inner">';
+      html += '<div class="ap-icon">'+icon+'</div>';
+      html += '<div class="ap-info">';
+      html += '<div class="ap-ev-name">'+escapeHtml(ev.summary||'Untitled')+'</div>';
+      html += '<div class="ap-ev-time">'+formatTimeRange(ev.start.dateTime, ev.end.dateTime)+'</div>';
+      html += '</div></div></div>';
     }
+
     html += '</div></div>';
   }
+
   html += '</div>';
   root.innerHTML = html;
   renderLegend();
@@ -841,59 +808,36 @@ function renderCalendar(events) {
 
 function renderLegend() {
   var legend = document.getElementById('legend');
-  var entries = Object.entries(colorAssignments).sort(function(a, b) { return a[1] - b[1]; });
+  var entries = Object.entries(colorAssignments).sort(function(a,b){return a[1]-b[1];});
   if (!entries.length) { legend.innerHTML = ''; return; }
   var html = '';
   for (var i = 0; i < entries.length; i++) {
-    var name = entries[i][0], ci = entries[i][1];
-    var pal = PALETTE[ci];
-    var display = name.split(' ').map(function(w) { return w.charAt(0).toUpperCase() + w.slice(1); }).join(' ');
-    html += '<div class="ap-legend-item"><span class="ap-legend-dot" style="background:' + pal.color + '"></span>' + display + '</div>';
+    var pal = PALETTE[entries[i][1]];
+    var display = entries[i][0].split(' ').map(function(w){return w.charAt(0).toUpperCase()+w.slice(1);}).join(' ');
+    html += '<div class="ap-legend-item"><span class="ap-legend-dot" style="background:'+pal.color+'"></span>'+display+'</div>';
   }
   legend.innerHTML = html;
 }
 
+/* ---- Modal ---- */
 function showModal(idx) {
-  var ev = currentEvents[idx];
-  if (!ev) return;
-  var ci = getColorForClass(ev.summary || 'Event');
+  var ev = currentEvents[idx]; if (!ev) return;
+  var ci = getColorForClass(ev.summary||'Event');
   var pal = PALETTE[ci];
-  var iconType = getIconType(ev.summary || '');
-  var icon = getSvgIcon(iconType, pal.color);
-  var startDate = new Date(ev.start.dateTime);
+  var icon = getSvgIcon(getIconType(ev.summary||''), pal.color);
+  var sd = new Date(ev.start.dateTime);
 
-  var html = '<div class="ap-modal-bar" style="background:' + pal.color + '"></div>';
-  html += '<div class="ap-modal-body">';
-  html += '<div class="ap-modal-hdr">';
-  html += '<div class="ap-modal-icon">' + icon + '</div>';
-  html += '<div class="ap-modal-title">' + escapeHtml(ev.summary || 'Untitled') + '</div>';
-  html += '</div>';
+  var h = '<div class="ap-modal-bar" style="background:'+pal.color+'"></div><div class="ap-modal-body">';
+  h += '<div class="ap-modal-hdr"><div class="ap-modal-icon">'+icon+'</div>';
+  h += '<div class="ap-modal-title">'+escapeHtml(ev.summary||'Untitled')+'</div></div>';
+  h += '<div class="ap-detail"><span class="ap-detail-lbl">Date</span><span class="ap-detail-val">'+formatDateFull(sd)+'</span></div>';
+  h += '<div class="ap-detail"><span class="ap-detail-lbl">Time</span><span class="ap-detail-val">'+formatTimeRange(ev.start.dateTime,ev.end.dateTime)+'</span></div>';
+  if (ev.location) h += '<div class="ap-detail"><span class="ap-detail-lbl">Location</span><span class="ap-detail-val">'+escapeHtml(ev.location)+'</span></div>';
+  if (ev.description) h += '<div class="ap-detail"><span class="ap-detail-lbl">Details</span><span class="ap-detail-val">'+sanitizeDescription(ev.description)+'</span></div>';
+  if (ev.htmlLink) h += '<div class="ap-detail"><span class="ap-detail-lbl">Link</span><span class="ap-detail-val"><a href="'+escapeHtml(ev.htmlLink)+'" target="_blank" rel="noopener">View in Google Calendar</a></span></div>';
+  h += '<button class="ap-modal-close" onclick="closeModal()">Close</button></div>';
 
-  html += '<div class="ap-detail"><span class="ap-detail-lbl">Date</span>';
-  html += '<span class="ap-detail-val">' + formatDateFull(startDate) + '</span></div>';
-
-  html += '<div class="ap-detail"><span class="ap-detail-lbl">Time</span>';
-  html += '<span class="ap-detail-val">' + formatTimeRange(ev.start.dateTime, ev.end.dateTime) + '</span></div>';
-
-  if (ev.location) {
-    html += '<div class="ap-detail"><span class="ap-detail-lbl">Location</span>';
-    html += '<span class="ap-detail-val">' + escapeHtml(ev.location) + '</span></div>';
-  }
-
-  if (ev.description) {
-    html += '<div class="ap-detail"><span class="ap-detail-lbl">Details</span>';
-    html += '<span class="ap-detail-val">' + sanitizeDescription(ev.description) + '</span></div>';
-  }
-
-  if (ev.htmlLink) {
-    html += '<div class="ap-detail"><span class="ap-detail-lbl">Link</span>';
-    html += '<span class="ap-detail-val"><a href="' + escapeHtml(ev.htmlLink) + '" target="_blank" rel="noopener">View in Google Calendar</a></span></div>';
-  }
-
-  html += '<button class="ap-modal-close" onclick="closeModal()">Close</button>';
-  html += '</div>';
-
-  document.getElementById('modalContent').innerHTML = html;
+  document.getElementById('modalContent').innerHTML = h;
   document.getElementById('modalOverlay').classList.add('active');
   document.body.style.overflow = 'hidden';
 }
@@ -904,37 +848,21 @@ function closeModal(e) {
   document.body.style.overflow = '';
 }
 
-document.addEventListener('keydown', function(e) {
-  if (e.key === 'Escape') closeModal();
-});
+document.addEventListener('keydown', function(e) { if (e.key==='Escape') closeModal(); });
 
 document.getElementById('calendarRoot').addEventListener('click', function(e) {
   var card = e.target.closest('.ap-card');
-  if (!card) return;
-  var idx = parseInt(card.dataset.idx, 10);
-  if (!isNaN(idx)) showModal(idx);
+  if (card) { var idx = parseInt(card.dataset.idx, 10); if (!isNaN(idx)) showModal(idx); }
 });
 
-function escapeHtml(str) {
-  var div = document.createElement('div');
-  div.textContent = str;
-  return div.innerHTML;
-}
-
-function sanitizeDescription(html) {
-  var tmp = document.createElement('div');
-  tmp.innerHTML = html;
-  var bad = tmp.querySelectorAll('script,style,iframe,object,embed');
-  for (var i = 0; i < bad.length; i++) bad[i].remove();
-  return tmp.innerHTML;
-}
+function escapeHtml(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function sanitizeDescription(h) { var t = document.createElement('div'); t.innerHTML = h; var b = t.querySelectorAll('script,style,iframe,object,embed'); for (var i=0;i<b.length;i++) b[i].remove(); return t.innerHTML; }
 
 async function loadCalendar() {
   updateWeekLabel();
   var banner = document.getElementById('statusBanner');
   banner.innerHTML = '<div class="ap-loading-msg">Loading schedule…</div>';
   renderCalendar([]);
-
   try {
     var events = await fetchEvents();
     banner.innerHTML = '';
@@ -945,17 +873,14 @@ async function loadCalendar() {
       + '"Make available to public" in the calendar\'s Access permissions, '
       + 'or you can set a Google Calendar API key in <code>CONFIG.API_KEY</code>.'
       + '<br><small style="color:#aaa !important;margin-top:8px !important;display:block !important">'
-      + escapeHtml(err.message) + '</small>'
-      + '</div>';
+      + escapeHtml(err.message) + '</small></div>';
   }
 }
 
 var resizeTimer;
 window.addEventListener('resize', function() {
   clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(function() {
-    if (currentEvents.length > 0) renderCalendar(currentEvents);
-  }, 200);
+  resizeTimer = setTimeout(function() { renderCalendar(currentEvents); }, 200);
 });
 
 loadCalendar();
