@@ -74,7 +74,7 @@
     text-align: center;
   }
 
-  .loading-state, .error-state {
+  .loading-state, .error-state, .setup-banner {
     text-align: center;
     padding: 60px 24px;
     color: #888;
@@ -92,6 +92,14 @@
     color: #666;
     word-break: break-all;
   }
+  .setup-banner {
+    padding: 20px 24px;
+    background: #FFF8E1;
+    border-bottom: 1px solid #F0E0B0;
+    color: #8D6E00;
+    font-size: 13px;
+  }
+  .setup-banner a { color: #5D4200; }
 
   .calendar-grid {
     display: grid;
@@ -406,9 +414,9 @@
   <div class="week-label" id="weekLabel"></div>
 </div>
 
-<div id="calendarRoot">
-  <div class="loading-state" id="loadingState">Loading schedule&hellip;</div>
-</div>
+<div id="statusBanner"></div>
+
+<div id="calendarRoot"></div>
 
 <div class="legend" id="legend"></div>
 
@@ -419,10 +427,18 @@
 <script>
 const CONFIG = {
   CALENDAR_ID: 'c_ade5d17214381af99c90f185a13faba2bbbc86b080a1e69c95aeaf90aa9fce59@group.calendar.google.com',
-  API_KEY: 'AIzaSyBNlYH01_9Hc5S1J9vuFmu2nUqBZJNAXxs',
+  API_KEY: '',
   TIMEZONE: 'America/New_York',
   MOBILE_BREAKPOINT: 768,
 };
+
+const ICAL_URL = 'https://calendar.google.com/calendar/ical/'
+  + encodeURIComponent(CONFIG.CALENDAR_ID) + '/public/basic.ics';
+
+const CORS_PROXIES = [
+  url => 'https://corsproxy.io/?' + encodeURIComponent(url),
+  url => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url),
+];
 
 const PALETTE = [
   { color: '#E8943A', bg: '#FDF3E7' },
@@ -532,7 +548,7 @@ function formatDateFull(date) {
 
 function formatTime(dateStr) {
   const d = new Date(dateStr);
-  return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone: CONFIG.TIMEZONE });
+  return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
 }
 
 function formatTimeRange(start, end) {
@@ -563,26 +579,120 @@ function navigateToday() {
   loadCalendar();
 }
 
-async function fetchEvents() {
+function parseICalDate(str) {
+  if (!str) return null;
+  str = str.replace(/^.*:/, '');
+  if (str.includes('T')) {
+    const y = str.slice(0,4), m = str.slice(4,6), d = str.slice(6,8);
+    const h = str.slice(9,11), mi = str.slice(11,13), s = str.slice(13,15);
+    const iso = `${y}-${m}-${d}T${h}:${mi}:${s}`;
+    if (str.endsWith('Z')) return new Date(iso + 'Z');
+    return new Date(iso);
+  }
+  const y = str.slice(0,4), m = str.slice(4,6), d = str.slice(6,8);
+  return new Date(`${y}-${m}-${d}T00:00:00`);
+}
+
+function unescapeIcal(str) {
+  return str.replace(/\\n/g, '\n').replace(/\\,/g, ',').replace(/\\\\/g, '\\');
+}
+
+function parseICal(text) {
+  const lines = [];
+  for (const raw of text.split(/\r?\n/)) {
+    if (raw.startsWith(' ') || raw.startsWith('\t')) {
+      if (lines.length) lines[lines.length - 1] += raw.slice(1);
+    } else {
+      lines.push(raw);
+    }
+  }
+
+  const events = [];
+  let inEvent = false, ev = {};
+  for (const line of lines) {
+    if (line === 'BEGIN:VEVENT') { inEvent = true; ev = {}; continue; }
+    if (line === 'END:VEVENT') {
+      inEvent = false;
+      if (ev.dtstart) events.push(ev);
+      continue;
+    }
+    if (!inEvent) continue;
+    const colonIdx = line.indexOf(':');
+    if (colonIdx < 0) continue;
+    const key = line.slice(0, colonIdx).split(';')[0].toUpperCase();
+    const val = line.slice(colonIdx + 1);
+    if (key === 'SUMMARY') ev.summary = unescapeIcal(val);
+    else if (key === 'DTSTART') ev.dtstart = parseICalDate(line.slice(line.indexOf(':') + 1));
+    else if (key === 'DTEND') ev.dtend = parseICalDate(line.slice(line.indexOf(':') + 1));
+    else if (key === 'DESCRIPTION') ev.description = unescapeIcal(val);
+    else if (key === 'LOCATION') ev.location = unescapeIcal(val);
+    else if (key === 'UID') ev.uid = val;
+  }
+  return events;
+}
+
+function normalizeEvents(icalEvents, weekStart, weekEnd) {
+  return icalEvents
+    .filter(e => {
+      if (!e.dtstart) return false;
+      const isAllDay = e.dtstart.getHours() === 0 && e.dtstart.getMinutes() === 0
+        && e.dtend && e.dtend.getHours() === 0 && e.dtend.getMinutes() === 0
+        && (e.dtend - e.dtstart) >= 86400000;
+      if (isAllDay) return false;
+      return e.dtstart >= weekStart && e.dtstart < weekEnd;
+    })
+    .sort((a, b) => a.dtstart - b.dtstart)
+    .map(e => ({
+      summary: e.summary || 'Untitled',
+      start: { dateTime: e.dtstart.toISOString() },
+      end: { dateTime: (e.dtend || new Date(e.dtstart.getTime() + 3600000)).toISOString() },
+      description: e.description || '',
+      location: e.location || '',
+      htmlLink: '',
+    }));
+}
+
+async function fetchViaICal() {
+  let lastErr;
+  for (const makeUrl of CORS_PROXIES) {
+    try {
+      const res = await fetch(makeUrl(ICAL_URL));
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const text = await res.text();
+      if (!text.includes('BEGIN:VCALENDAR')) throw new Error('Invalid iCal response');
+      const weekEnd = addDays(currentWeekStart, 7);
+      return normalizeEvents(parseICal(text), currentWeekStart, weekEnd);
+    } catch (e) {
+      lastErr = e;
+    }
+  }
+  throw lastErr || new Error('All CORS proxies failed');
+}
+
+async function fetchViaAPI() {
+  if (!CONFIG.API_KEY) throw new Error('No API key configured');
   const timeMin = currentWeekStart.toISOString();
   const timeMax = addDays(currentWeekStart, 7).toISOString();
   const calId = encodeURIComponent(CONFIG.CALENDAR_ID);
   const url = `https://www.googleapis.com/calendar/v3/calendars/${calId}/events?`
     + `key=${CONFIG.API_KEY}`
-    + `&timeMin=${timeMin}`
-    + `&timeMax=${timeMax}`
-    + `&singleEvents=true`
-    + `&orderBy=startTime`
-    + `&timeZone=${CONFIG.TIMEZONE}`
-    + `&maxResults=250`;
-
+    + `&timeMin=${timeMin}&timeMax=${timeMax}`
+    + `&singleEvents=true&orderBy=startTime`
+    + `&timeZone=${CONFIG.TIMEZONE}&maxResults=250`;
   const res = await fetch(url);
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(err.error?.message || `API error ${res.status}`);
+    throw new Error(err.error?.message || `API ${res.status}`);
   }
   const data = await res.json();
   return (data.items || []).filter(e => e.start?.dateTime);
+}
+
+async function fetchEvents() {
+  if (CONFIG.API_KEY) {
+    try { return await fetchViaAPI(); } catch (_) {}
+  }
+  return await fetchViaICal();
 }
 
 function groupByDay(events) {
@@ -744,17 +854,18 @@ function sanitizeDescription(html) {
 
 async function loadCalendar() {
   updateWeekLabel();
-  const root = document.getElementById('calendarRoot');
-  root.innerHTML = '<div class="loading-state">Loading schedule&hellip;</div>';
+  const banner = document.getElementById('statusBanner');
+  banner.innerHTML = '<div class="loading-state" style="padding:16px">Loading schedule&hellip;</div>';
+  renderCalendar([]);
 
   try {
     const events = await fetchEvents();
+    banner.innerHTML = '';
     renderCalendar(events);
   } catch (err) {
-    root.innerHTML = `<div class="error-state">
-      <p>Could not load calendar data.</p>
-      <p>If you're hosting this page, you may need to set your own Google Calendar API key in the <code>CONFIG.API_KEY</code> variable.</p>
-      <code>${escapeHtml(err.message)}</code>
+    banner.innerHTML = `<div class="setup-banner">
+      Could not load live calendar data. Make sure the Google Calendar is set to public,
+      or set a Google Calendar API key in <code>CONFIG.API_KEY</code>.
     </div>`;
   }
 }
