@@ -11,17 +11,14 @@
     --ap-color-2: #7BAED6;
     --ap-color-3: #E84B8A;
     --ap-color-4: #6BAE73;
-    --ap-bg-1: #FDF3E7;
-    --ap-bg-2: #EBF3FA;
-    --ap-bg-3: #FDEAF2;
-    --ap-bg-4: #EDF7EE;
     --ap-hour-h: 60px;
+    width: 100% !important;
     font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
     color: #333 !important;
     line-height: 1.5 !important;
     -webkit-font-smoothing: antialiased !important;
+    position: relative !important;
   }
-
   .atplay-cal *, .atplay-cal *::before, .atplay-cal *::after {
     box-sizing: border-box !important;
     margin: 0 !important;
@@ -32,24 +29,12 @@
   .atplay-cal .ap-header {
     background: #fff !important;
     border-bottom: 1px solid #e0e0e0 !important;
-    padding: 16px 24px !important;
+    padding: 12px 16px !important;
     display: flex !important;
     align-items: center !important;
-    justify-content: space-between !important;
+    justify-content: flex-start !important;
     flex-wrap: wrap !important;
     gap: 12px !important;
-  }
-  .atplay-cal .ap-header h1 {
-    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
-    font-size: 22px !important;
-    font-weight: 700 !important;
-    color: #222 !important;
-    letter-spacing: -0.3px !important;
-    text-transform: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    line-height: 1.3 !important;
-    border: none !important;
   }
   .atplay-cal .ap-week-nav {
     display: flex !important;
@@ -84,24 +69,43 @@
     border-color: var(--ap-color-3) !important;
   }
   .atplay-cal .ap-week-nav button.ap-today-btn:hover {
-    background: var(--ap-bg-3) !important;
+    background: #FDEAF2 !important;
   }
   .atplay-cal .ap-week-label {
     font-size: 15px !important;
     font-weight: 600 !important;
     color: #555 !important;
-    min-width: 200px !important;
-    text-align: center !important;
+    text-align: left !important;
     font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
     text-transform: none !important;
   }
 
-  /* ---- Status / loading ---- */
-  .atplay-cal .ap-status-banner {
-    text-align: center !important;
-    color: #888 !important;
-    font-size: 14px !important;
-    line-height: 1.6 !important;
+  /* ---- Loading overlay ---- */
+  .atplay-cal .ap-loading-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 99998 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: rgba(255,255,255,0.4) !important;
+    pointer-events: none !important;
+  }
+  .atplay-cal .ap-loading-box {
+    width: 480px !important;
+    height: 320px !important;
+    max-width: 90vw !important;
+    max-height: 80vh !important;
+    background: #fff !important;
+    border: 1px solid #ddd !important;
+    border-radius: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
+    font-size: 15px !important;
+    color: #999 !important;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08) !important;
   }
   .atplay-cal .ap-setup-msg {
     padding: 20px 24px !important;
@@ -111,14 +115,8 @@
     font-size: 13px !important;
     text-align: center !important;
   }
-  .atplay-cal .ap-loading-msg {
-    padding: 16px !important;
-    text-align: center !important;
-    color: #aaa !important;
-    font-size: 14px !important;
-  }
 
-  /* ---- Timetable grid (desktop) ---- */
+  /* ---- Timetable grid ---- */
   .atplay-cal .ap-timetable {
     display: grid !important;
     grid-template-columns: 52px repeat(7, 1fr) !important;
@@ -128,7 +126,7 @@
     overflow-x: auto !important;
   }
 
-  /* Time gutter column */
+  /* Time gutter */
   .atplay-cal .ap-time-col {
     background: #fff !important;
     display: flex !important;
@@ -137,7 +135,7 @@
   }
   .atplay-cal .ap-gutter-corner {
     border-bottom: 1px solid #e0e0e0 !important;
-    min-height: 46px !important;
+    height: 46px !important;
   }
   .atplay-cal .ap-time-gutter {
     position: relative !important;
@@ -165,15 +163,16 @@
     border-left: 1px solid #e8e8e8 !important;
   }
   .atplay-cal .ap-day-hdr {
-    padding: 8px 4px 6px !important;
+    padding: 6px 4px !important;
     border-bottom: 1px solid #e0e0e0 !important;
     text-align: center !important;
     background: #fff !important;
-    min-height: 46px !important;
+    height: 46px !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
+    overflow: hidden !important;
   }
   .atplay-cal .ap-day-name {
     font-size: 10px !important;
@@ -185,39 +184,38 @@
     line-height: 1 !important;
   }
   .atplay-cal .ap-day-num {
-    font-size: 18px !important;
+    font-size: 14px !important;
     font-weight: 700 !important;
     color: #333 !important;
     font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
-    line-height: 1.2 !important;
-    margin-top: 2px !important;
+    line-height: 1 !important;
+    margin-top: 3px !important;
+    width: 24px !important;
+    height: 24px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
   }
   .atplay-cal .ap-day-col.is-today .ap-day-num {
     background: var(--ap-color-3) !important;
     color: #fff !important;
-    width: 28px !important;
-    height: 28px !important;
-    border-radius: 50% !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    font-size: 14px !important;
   }
 
-  /* Day body with hour grid lines */
+  /* Day body — hour lines skip the first (8 AM) line */
   .atplay-cal .ap-day-body {
     position: relative !important;
     background-color: #fff !important;
     background-image: repeating-linear-gradient(
       to bottom,
-      #eee 0px, #eee 1px,
-      transparent 1px, transparent var(--ap-hour-h)
+      transparent 0px, transparent calc(var(--ap-hour-h) - 1px),
+      #eee calc(var(--ap-hour-h) - 1px), #eee var(--ap-hour-h)
     ) !important;
     background-size: 100% var(--ap-hour-h) !important;
     overflow: visible !important;
   }
 
-  /* Event cards (absolutely positioned on desktop) */
+  /* Event cards */
   .atplay-cal .ap-card {
     position: absolute !important;
     left: 3px !important;
@@ -230,7 +228,7 @@
     border: none !important;
     text-decoration: none !important;
     text-align: left !important;
-    overflow: hidden !important;
+    background: #fff !important;
   }
   .atplay-cal .ap-card:hover {
     transform: scale(1.02) !important;
@@ -240,6 +238,7 @@
   .atplay-cal .ap-startline {
     height: 4px !important;
     margin: 0 !important;
+    border-radius: 5px 5px 0 0 !important;
   }
   .atplay-cal .ap-card-inner {
     padding: 4px 6px 6px !important;
@@ -266,12 +265,12 @@
     font-weight: 700 !important;
     line-height: 1.2 !important;
     color: #333 !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
     font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
     text-transform: none !important;
     text-decoration: none !important;
+    white-space: normal !important;
+    overflow-wrap: break-word !important;
+    word-wrap: break-word !important;
   }
   .atplay-cal .ap-ev-time {
     font-size: 10px !important;
@@ -318,9 +317,7 @@
     height: 6px !important;
     border-radius: 12px 12px 0 0 !important;
   }
-  .atplay-cal .ap-modal-body {
-    padding: 24px !important;
-  }
+  .atplay-cal .ap-modal-body { padding: 24px !important; }
   .atplay-cal .ap-modal-hdr {
     display: flex !important;
     align-items: flex-start !important;
@@ -332,11 +329,7 @@
     width: 44px !important;
     height: 44px !important;
   }
-  .atplay-cal .ap-modal-icon svg {
-    width: 44px !important;
-    height: 44px !important;
-    display: block !important;
-  }
+  .atplay-cal .ap-modal-icon svg { width: 44px !important; height: 44px !important; display: block !important; }
   .atplay-cal .ap-modal-title {
     font-size: 20px !important;
     font-weight: 700 !important;
@@ -373,10 +366,7 @@
     color: #555 !important;
     font-size: 14px !important;
   }
-  .atplay-cal .ap-detail-val a {
-    color: var(--ap-color-2) !important;
-    text-decoration: none !important;
-  }
+  .atplay-cal .ap-detail-val a { color: var(--ap-color-2) !important; text-decoration: none !important; }
   .atplay-cal .ap-detail-val a:hover { text-decoration: underline !important; }
   .atplay-cal .ap-modal-close {
     display: block !important;
@@ -399,42 +389,13 @@
   }
   .atplay-cal .ap-modal-close:hover { background: #eee !important; }
 
-  /* ---- Legend ---- */
-  .atplay-cal .ap-legend {
-    padding: 10px 24px !important;
-    background: #fff !important;
-    border-top: 1px solid #e0e0e0 !important;
-    display: flex !important;
-    flex-wrap: wrap !important;
-    gap: 16px !important;
-    align-items: center !important;
-    font-size: 12px !important;
-    color: #777 !important;
-  }
-  .atplay-cal .ap-legend-item {
-    display: flex !important;
-    align-items: center !important;
-    gap: 6px !important;
-    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
-    font-size: 12px !important;
-    color: #777 !important;
-  }
-  .atplay-cal .ap-legend-dot {
-    width: 10px !important;
-    height: 10px !important;
-    border-radius: 50% !important;
-    flex-shrink: 0 !important;
-  }
-
-  /* ---- Mobile: stack days, no time grid ---- */
+  /* ---- Mobile ---- */
   @media (max-width: 768px) {
     .atplay-cal .ap-header {
-      padding: 12px 16px !important;
-      justify-content: center !important;
-      text-align: center !important;
+      padding: 10px 12px !important;
+      justify-content: flex-start !important;
     }
-    .atplay-cal .ap-header h1 { width: 100% !important; }
-    .atplay-cal .ap-week-label { min-width: auto !important; font-size: 14px !important; }
+    .atplay-cal .ap-week-label { font-size: 14px !important; }
     .atplay-cal .ap-week-nav button { padding: 6px 10px !important; font-size: 12px !important; }
 
     .atplay-cal .ap-timetable {
@@ -456,10 +417,26 @@
       align-items: baseline !important;
       gap: 8px !important;
       border-bottom: none !important;
-      min-height: auto !important;
+      height: auto !important;
     }
     .atplay-cal .ap-day-name { font-size: 13px !important; }
-    .atplay-cal .ap-day-num { font-size: 16px !important; margin-top: 0 !important; }
+    .atplay-cal .ap-day-num {
+      font-size: 16px !important;
+      margin-top: 0 !important;
+      width: auto !important;
+      height: auto !important;
+      display: inline !important;
+      border-radius: 0 !important;
+      background: none !important;
+    }
+    .atplay-cal .ap-day-col.is-today .ap-day-num {
+      background: var(--ap-color-3) !important;
+      color: #fff !important;
+      width: 26px !important;
+      height: 26px !important;
+      display: inline-flex !important;
+      border-radius: 50% !important;
+    }
     .atplay-cal .ap-day-body {
       height: auto !important;
       position: static !important;
@@ -478,9 +455,8 @@
     .atplay-cal .ap-card-inner { padding: 8px 10px !important; gap: 8px !important; }
     .atplay-cal .ap-icon { width: 32px !important; height: 32px !important; }
     .atplay-cal .ap-icon svg { width: 32px !important; height: 32px !important; }
-    .atplay-cal .ap-ev-name { font-size: 14px !important; white-space: normal !important; }
+    .atplay-cal .ap-ev-name { font-size: 14px !important; }
     .atplay-cal .ap-ev-time { font-size: 12px !important; }
-    .atplay-cal .ap-startline { height: 4px !important; }
 
     .atplay-cal .ap-modal {
       width: 100% !important;
@@ -490,7 +466,11 @@
       min-height: 100vh !important;
     }
     .atplay-cal .ap-modal-body { padding: 20px 16px !important; }
-    .atplay-cal .ap-legend { padding: 10px 16px !important; justify-content: center !important; }
+
+    .atplay-cal .ap-loading-box {
+      width: 320px !important;
+      height: 200px !important;
+    }
   }
 </style>
 </head>
@@ -499,7 +479,6 @@
 <div class="atplay-cal">
 
   <div class="ap-header">
-    <h1>At Play</h1>
     <div class="ap-week-nav">
       <button onclick="navigateWeek(-1)" aria-label="Previous week">&larr; Prev</button>
       <button class="ap-today-btn" onclick="navigateToday()">Today</button>
@@ -508,9 +487,8 @@
     <div class="ap-week-label" id="weekLabel"></div>
   </div>
 
-  <div id="statusBanner" class="ap-status-banner"></div>
+  <div id="statusBanner"></div>
   <div id="calendarRoot"></div>
-  <div id="legend" class="ap-legend"></div>
 
   <div class="ap-overlay" id="modalOverlay" onclick="closeModal(event)">
     <div class="ap-modal" id="modalContent" onclick="event.stopPropagation()"></div>
@@ -539,35 +517,34 @@ var CORS_PROXIES = [
 ];
 
 var PALETTE = [
-  { color: '#E8943A', bg: '#FDF3E7' },
-  { color: '#7BAED6', bg: '#EBF3FA' },
-  { color: '#E84B8A', bg: '#FDEAF2' },
-  { color: '#6BAE73', bg: '#EDF7EE' },
+  { color: '#E8943A' },
+  { color: '#7BAED6' },
+  { color: '#E84B8A' },
+  { color: '#6BAE73' },
 ];
 
 var ICON_MAP = [
-  { keywords: ['yoga', 'stretch', 'mindful', 'meditation', 'zen'], icon: 'yoga' },
-  { keywords: ['dance', 'ballet', 'hip hop', 'hiphop', 'jazz', 'tap', 'salsa', 'movement'], icon: 'dance' },
-  { keywords: ['karate', 'martial', 'judo', 'taekwondo', 'kung fu', 'aikido', 'capoeira'], icon: 'martial' },
-  { keywords: ['swim', 'aqua', 'water', 'pool', 'dive'], icon: 'swim' },
-  { keywords: ['music', 'sing', 'choir', 'drum', 'guitar', 'piano', 'violin', 'band', 'ukulele'], icon: 'music' },
-  { keywords: ['art', 'craft', 'paint', 'draw', 'sketch', 'pottery', 'clay', 'sculpt', 'creative'], icon: 'art' },
-  { keywords: ['cook', 'bake', 'kitchen', 'chef', 'food', 'culinary'], icon: 'cook' },
-  { keywords: ['science', 'stem', 'lab', 'experiment', 'robot', 'coding', 'tech', 'engineer'], icon: 'science' },
-  { keywords: ['soccer', 'basketball', 'baseball', 'tennis', 'sport', 'football', 'volley', 'lacrosse', 'hockey'], icon: 'sports' },
-  { keywords: ['climb', 'adventure', 'obstacle', 'parkour', 'ninja'], icon: 'climb' },
-  { keywords: ['theatre', 'theater', 'drama', 'act', 'improv', 'perform', 'circus'], icon: 'theater' },
-  { keywords: ['read', 'book', 'story', 'literacy', 'writing', 'journal'], icon: 'book' },
-  { keywords: ['garden', 'nature', 'outdoor', 'hike', 'forest', 'farm'], icon: 'nature' },
-  { keywords: ['chess', 'game', 'puzzle', 'board', 'strategy'], icon: 'game' },
-  { keywords: ['gym', 'fitness', 'workout', 'exercise', 'boot camp', 'cross'], icon: 'fitness' },
-  { keywords: ['play', 'free', 'open', 'recess', 'fun'], icon: 'play' },
-  { keywords: ['photo', 'film', 'video', 'media', 'animation'], icon: 'camera' },
-  { keywords: ['lego', 'build', 'construct', 'maker', 'tinker'], icon: 'build' },
+  { keywords: ['yoga','stretch','mindful','meditation','zen'], icon: 'yoga' },
+  { keywords: ['dance','ballet','hip hop','hiphop','jazz','tap','salsa','movement'], icon: 'dance' },
+  { keywords: ['karate','martial','judo','taekwondo','kung fu','aikido','capoeira'], icon: 'martial' },
+  { keywords: ['swim','aqua','water','pool','dive'], icon: 'swim' },
+  { keywords: ['music','sing','choir','drum','guitar','piano','violin','band','ukulele'], icon: 'music' },
+  { keywords: ['art','craft','paint','draw','sketch','pottery','clay','sculpt','creative'], icon: 'art' },
+  { keywords: ['cook','bake','kitchen','chef','food','culinary'], icon: 'cook' },
+  { keywords: ['science','stem','lab','experiment','robot','coding','tech','engineer'], icon: 'science' },
+  { keywords: ['soccer','basketball','baseball','tennis','sport','football','volley','lacrosse','hockey'], icon: 'sports' },
+  { keywords: ['climb','adventure','obstacle','parkour','ninja'], icon: 'climb' },
+  { keywords: ['theatre','theater','drama','act','improv','perform','circus'], icon: 'theater' },
+  { keywords: ['read','book','story','literacy','writing','journal'], icon: 'book' },
+  { keywords: ['garden','nature','outdoor','hike','forest','farm'], icon: 'nature' },
+  { keywords: ['chess','game','puzzle','board','strategy'], icon: 'game' },
+  { keywords: ['gym','fitness','workout','exercise','boot camp','cross'], icon: 'fitness' },
+  { keywords: ['play','free','open','recess','fun'], icon: 'play' },
+  { keywords: ['photo','film','video','media','animation'], icon: 'camera' },
+  { keywords: ['lego','build','construct','maker','tinker'], icon: 'build' },
 ];
 
-function getSvgIcon(type, fillColor) {
-  var c = fillColor;
+function getSvgIcon(type, c) {
   var icons = {
     yoga: '<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="8" r="4" fill="'+c+'"/><path d="M20 14c-2 0-3.5 1-4.5 2.5L10 22l2.5 1.5 4-3.5v4l-5.5 8 2.5 1.5L18 28l2 3 2-3 4.5 5.5 2.5-1.5-5.5-8v-4l4 3.5L30 22l-5.5-5.5C23.5 15 22 14 20 14z" fill="'+c+'"/></svg>',
     dance: '<svg viewBox="0 0 40 40" fill="none"><circle cx="22" cy="7" r="4" fill="'+c+'"/><path d="M18 13c-1 0-2 .5-2.5 1.5L12 22h3l2-4 1 3-4 7 2.5 1.5L20 24l2 5h3l-3-8 3-4c1-1.5.5-3-.5-4s-3-1-4 0z" fill="'+c+'"/><path d="M26 16c1 2 2 4 1 6l-1 3h3l1-3c1-3 0-5-1-7l-3 1z" fill="'+c+'" opacity="0.7"/></svg>',
@@ -594,17 +571,13 @@ function getSvgIcon(type, fillColor) {
 
 function getIconType(name) {
   var lower = name.toLowerCase();
-  for (var i = 0; i < ICON_MAP.length; i++) {
-    for (var j = 0; j < ICON_MAP[i].keywords.length; j++) {
+  for (var i = 0; i < ICON_MAP.length; i++)
+    for (var j = 0; j < ICON_MAP[i].keywords.length; j++)
       if (lower.indexOf(ICON_MAP[i].keywords[j]) !== -1) return ICON_MAP[i].icon;
-    }
-  }
   return 'default';
 }
 
-var colorAssignments = {};
-var nextColorIndex = 0;
-var currentEvents = [];
+var colorAssignments = {}, nextColorIndex = 0, currentEvents = [];
 
 function getColorForClass(name) {
   var key = name.trim().toLowerCase();
@@ -614,273 +587,225 @@ function getColorForClass(name) {
   nextColorIndex++;
   if (nextColorIndex > max * 2 && Object.keys(colorAssignments).length > max) {
     var keys = Object.keys(colorAssignments);
-    if (colorAssignments[keys[keys.length - 1]] < max) colorAssignments[keys[keys.length - 1]] = 3;
+    if (colorAssignments[keys[keys.length-1]] < max) colorAssignments[keys[keys.length-1]] = 3;
   }
   return colorAssignments[key];
 }
 
 var currentWeekStart = getWeekStart(new Date());
-
-function getWeekStart(d) { var r = new Date(d); r.setDate(r.getDate() - r.getDay()); r.setHours(0,0,0,0); return r; }
-function addDays(d, n) { var r = new Date(d); r.setDate(r.getDate() + n); return r; }
-function formatDate(d) { return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
-function formatDateFull(d) { return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }); }
-function formatTime(s) { return new Date(s).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }); }
-function formatTimeRange(a, b) { return formatTime(a) + ' – ' + formatTime(b); }
-function isSameDay(a, b) { return a.getFullYear()===b.getFullYear() && a.getMonth()===b.getMonth() && a.getDate()===b.getDate(); }
-function isToday(d) { return isSameDay(d, new Date()); }
-
+function getWeekStart(d) { var r = new Date(d); r.setDate(r.getDate()-r.getDay()); r.setHours(0,0,0,0); return r; }
+function addDays(d,n) { var r = new Date(d); r.setDate(r.getDate()+n); return r; }
+function formatDate(d) { return d.toLocaleDateString('en-US',{month:'short',day:'numeric'}); }
+function formatDateFull(d) { return d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}); }
+function formatTime(s) { return new Date(s).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true}); }
+function formatTimeRange(a,b) { return formatTime(a)+' – '+formatTime(b); }
+function isSameDay(a,b) { return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate(); }
+function isToday(d) { return isSameDay(d,new Date()); }
 function updateWeekLabel() {
-  var end = addDays(currentWeekStart, 6);
-  document.getElementById('weekLabel').textContent = formatDate(currentWeekStart) + ' – ' + formatDate(end) + ', ' + end.getFullYear();
+  var end = addDays(currentWeekStart,6);
+  document.getElementById('weekLabel').textContent = formatDate(currentWeekStart)+' – '+formatDate(end)+', '+end.getFullYear();
 }
-function navigateWeek(dir) { currentWeekStart = addDays(currentWeekStart, dir * 7); loadCalendar(); }
+function navigateWeek(dir) { currentWeekStart = addDays(currentWeekStart,dir*7); loadCalendar(); }
 function navigateToday() { currentWeekStart = getWeekStart(new Date()); loadCalendar(); }
 
-/* ---- iCal parsing ---- */
+/* ---- iCal ---- */
 function parseICalDate(s) {
-  if (!s) return null;
-  s = s.replace(/^.*:/, '');
-  if (s.indexOf('T') !== -1) {
-    var iso = s.slice(0,4)+'-'+s.slice(4,6)+'-'+s.slice(6,8)+'T'+s.slice(9,11)+':'+s.slice(11,13)+':'+s.slice(13,15);
-    return new Date(s.charAt(s.length-1)==='Z' ? iso+'Z' : iso);
+  if (!s) return null; s=s.replace(/^.*:/,'');
+  if (s.indexOf('T')!==-1) {
+    var iso=s.slice(0,4)+'-'+s.slice(4,6)+'-'+s.slice(6,8)+'T'+s.slice(9,11)+':'+s.slice(11,13)+':'+s.slice(13,15);
+    return new Date(s.charAt(s.length-1)==='Z'?iso+'Z':iso);
   }
   return new Date(s.slice(0,4)+'-'+s.slice(4,6)+'-'+s.slice(6,8)+'T00:00:00');
 }
-
 function parseICal(text) {
-  var lines = [], raw = text.split(/\r?\n/);
-  for (var i = 0; i < raw.length; i++) {
-    if ((raw[i].charAt(0)===' '||raw[i].charAt(0)==='\t') && lines.length) lines[lines.length-1] += raw[i].slice(1);
+  var lines=[],raw=text.split(/\r?\n/);
+  for (var i=0;i<raw.length;i++) {
+    if ((raw[i].charAt(0)===' '||raw[i].charAt(0)==='\t')&&lines.length) lines[lines.length-1]+=raw[i].slice(1);
     else lines.push(raw[i]);
   }
-  var events = [], inEv = false, ev = {};
-  for (var j = 0; j < lines.length; j++) {
-    var ln = lines[j];
-    if (ln==='BEGIN:VEVENT') { inEv=true; ev={}; continue; }
-    if (ln==='END:VEVENT') { inEv=false; if (ev.dtstart) events.push(ev); continue; }
+  var events=[],inEv=false,ev={};
+  for (var j=0;j<lines.length;j++) {
+    var ln=lines[j];
+    if (ln==='BEGIN:VEVENT'){inEv=true;ev={};continue;}
+    if (ln==='END:VEVENT'){inEv=false;if(ev.dtstart)events.push(ev);continue;}
     if (!inEv) continue;
-    var ci = ln.indexOf(':'); if (ci<0) continue;
-    var key = ln.slice(0,ci).split(';')[0].toUpperCase(), val = ln.slice(ci+1);
-    if (key==='SUMMARY') ev.summary = val.replace(/\\n/g,'\n').replace(/\\,/g,',').replace(/\\\\/g,'\\');
-    else if (key==='DTSTART') ev.dtstart = parseICalDate(val);
-    else if (key==='DTEND') ev.dtend = parseICalDate(val);
-    else if (key==='DESCRIPTION') ev.description = val.replace(/\\n/g,'\n').replace(/\\,/g,',').replace(/\\\\/g,'\\');
-    else if (key==='LOCATION') ev.location = val.replace(/\\n/g,'\n').replace(/\\,/g,',').replace(/\\\\/g,'\\');
+    var ci=ln.indexOf(':');if(ci<0)continue;
+    var key=ln.slice(0,ci).split(';')[0].toUpperCase(),val=ln.slice(ci+1);
+    var ue=function(v){return v.replace(/\\n/g,'\n').replace(/\\,/g,',').replace(/\\\\/g,'\\');};
+    if(key==='SUMMARY')ev.summary=ue(val);
+    else if(key==='DTSTART')ev.dtstart=parseICalDate(val);
+    else if(key==='DTEND')ev.dtend=parseICalDate(val);
+    else if(key==='DESCRIPTION')ev.description=ue(val);
+    else if(key==='LOCATION')ev.location=ue(val);
   }
   return events;
 }
-
-function normalizeEvents(ical, ws, we) {
-  return ical.filter(function(e) {
-    if (!e.dtstart) return false;
-    var allDay = e.dtstart.getHours()===0 && e.dtstart.getMinutes()===0 && e.dtend && e.dtend.getHours()===0 && e.dtend.getMinutes()===0 && (e.dtend-e.dtstart)>=86400000;
-    return !allDay && e.dtstart >= ws && e.dtstart < we;
+function normalizeEvents(ical,ws,we) {
+  return ical.filter(function(e){
+    if(!e.dtstart)return false;
+    var allDay=e.dtstart.getHours()===0&&e.dtstart.getMinutes()===0&&e.dtend&&e.dtend.getHours()===0&&e.dtend.getMinutes()===0&&(e.dtend-e.dtstart)>=86400000;
+    return !allDay&&e.dtstart>=ws&&e.dtstart<we;
   }).sort(function(a,b){return a.dtstart-b.dtstart;}).map(function(e){
-    return { summary: e.summary||'Untitled', start:{dateTime:e.dtstart.toISOString()}, end:{dateTime:(e.dtend||new Date(e.dtstart.getTime()+3600000)).toISOString()}, description:e.description||'', location:e.location||'', htmlLink:'' };
+    return {summary:e.summary||'Untitled',start:{dateTime:e.dtstart.toISOString()},end:{dateTime:(e.dtend||new Date(e.dtstart.getTime()+3600000)).toISOString()},description:e.description||'',location:e.location||'',htmlLink:''};
   });
 }
 
-/* ---- Fetch strategies ---- */
+/* ---- Fetch ---- */
 async function fetchViaICal() {
-  var errors = [];
-  for (var i = 0; i < CORS_PROXIES.length; i++) {
+  var errors=[];
+  for (var i=0;i<CORS_PROXIES.length;i++) {
     try {
-      var res = await fetch(CORS_PROXIES[i](ICAL_URL));
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      var text = await res.text();
-      if (text.indexOf('BEGIN:VCALENDAR') === -1) throw new Error('Not iCal');
-      return normalizeEvents(parseICal(text), currentWeekStart, addDays(currentWeekStart, 7));
-    } catch (e) { errors.push('Proxy '+(i+1)+': '+e.message); }
+      var res=await fetch(CORS_PROXIES[i](ICAL_URL));
+      if(!res.ok)throw new Error('HTTP '+res.status);
+      var text=await res.text();
+      if(text.indexOf('BEGIN:VCALENDAR')===-1)throw new Error('Not iCal');
+      return normalizeEvents(parseICal(text),currentWeekStart,addDays(currentWeekStart,7));
+    } catch(e){errors.push('Proxy '+(i+1)+': '+e.message);}
   }
   throw new Error(errors.join(' | '));
 }
-
 async function fetchViaGoogleEmbed() {
-  var calId = encodeURIComponent(CONFIG.CALENDAR_ID);
-  var url = 'https://www.googleapis.com/calendar/v3/calendars/'+calId+'/events?key=AIzaSyBNlYH01_9Hc5S1J9vuFmu2nUqBZJNAXxs&timeMin='+currentWeekStart.toISOString()+'&timeMax='+addDays(currentWeekStart,7).toISOString()+'&singleEvents=true&orderBy=startTime&timeZone='+CONFIG.TIMEZONE+'&maxResults=250';
-  var res = await fetch(url);
-  if (!res.ok) throw new Error('Embed API '+res.status);
-  var data = await res.json();
-  return (data.items||[]).filter(function(e){return e.start&&e.start.dateTime;});
+  var calId=encodeURIComponent(CONFIG.CALENDAR_ID);
+  var url='https://www.googleapis.com/calendar/v3/calendars/'+calId+'/events?key=AIzaSyBNlYH01_9Hc5S1J9vuFmu2nUqBZJNAXxs&timeMin='+currentWeekStart.toISOString()+'&timeMax='+addDays(currentWeekStart,7).toISOString()+'&singleEvents=true&orderBy=startTime&timeZone='+CONFIG.TIMEZONE+'&maxResults=250';
+  var res=await fetch(url);if(!res.ok)throw new Error('Embed API '+res.status);
+  var data=await res.json();return(data.items||[]).filter(function(e){return e.start&&e.start.dateTime;});
 }
-
 async function fetchViaAPI() {
-  if (!CONFIG.API_KEY) throw new Error('No API key');
-  var calId = encodeURIComponent(CONFIG.CALENDAR_ID);
-  var url = 'https://www.googleapis.com/calendar/v3/calendars/'+calId+'/events?key='+CONFIG.API_KEY+'&timeMin='+currentWeekStart.toISOString()+'&timeMax='+addDays(currentWeekStart,7).toISOString()+'&singleEvents=true&orderBy=startTime&timeZone='+CONFIG.TIMEZONE+'&maxResults=250';
-  var res = await fetch(url);
-  if (!res.ok) throw new Error('API '+res.status);
-  var data = await res.json();
-  return (data.items||[]).filter(function(e){return e.start&&e.start.dateTime;});
+  if(!CONFIG.API_KEY)throw new Error('No API key');
+  var calId=encodeURIComponent(CONFIG.CALENDAR_ID);
+  var url='https://www.googleapis.com/calendar/v3/calendars/'+calId+'/events?key='+CONFIG.API_KEY+'&timeMin='+currentWeekStart.toISOString()+'&timeMax='+addDays(currentWeekStart,7).toISOString()+'&singleEvents=true&orderBy=startTime&timeZone='+CONFIG.TIMEZONE+'&maxResults=250';
+  var res=await fetch(url);if(!res.ok)throw new Error('API '+res.status);
+  var data=await res.json();return(data.items||[]).filter(function(e){return e.start&&e.start.dateTime;});
 }
-
 async function fetchEvents() {
-  var errors = [];
-  if (CONFIG.API_KEY) { try { return await fetchViaAPI(); } catch(e) { errors.push('API: '+e.message); } }
-  try { return await fetchViaICal(); } catch(e) { errors.push('iCal: '+e.message); }
-  try { return await fetchViaGoogleEmbed(); } catch(e) { errors.push('Embed: '+e.message); }
+  var errors=[];
+  if(CONFIG.API_KEY){try{return await fetchViaAPI();}catch(e){errors.push('API: '+e.message);}}
+  try{return await fetchViaICal();}catch(e){errors.push('iCal: '+e.message);}
+  try{return await fetchViaGoogleEmbed();}catch(e){errors.push('Embed: '+e.message);}
   throw new Error(errors.join(' | '));
 }
 
-/* ---- Rendering ---- */
+/* ---- Render ---- */
 function groupByDay(events) {
-  var days = [];
-  for (var i = 0; i < 7; i++) days.push({ date: addDays(currentWeekStart, i), events: [] });
-  for (var j = 0; j < events.length; j++) {
-    var d = new Date(events[j].start.dateTime);
-    for (var k = 0; k < days.length; k++) { if (isSameDay(d, days[k].date)) { days[k].events.push(events[j]); break; } }
-  }
+  var days=[];
+  for(var i=0;i<7;i++)days.push({date:addDays(currentWeekStart,i),events:[]});
+  for(var j=0;j<events.length;j++){var d=new Date(events[j].start.dateTime);for(var k=0;k<days.length;k++){if(isSameDay(d,days[k].date)){days[k].events.push(events[j]);break;}}}
   return days;
 }
-
 function hourLabel(h) {
-  if (h === 0) return '12 AM';
-  if (h < 12) return h + ' AM';
-  if (h === 12) return '12 PM';
-  return (h - 12) + ' PM';
+  if(h===0)return '12 AM';if(h<12)return h+' AM';if(h===12)return '12 PM';return(h-12)+' PM';
 }
 
 function renderCalendar(events) {
-  currentEvents = events;
-  var root = document.getElementById('calendarRoot');
-  var days = groupByDay(events);
-  var isMobile = window.innerWidth <= CONFIG.MOBILE_BREAKPOINT;
-  var dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-  var H = CONFIG.HOUR_HEIGHT;
-  var totalH = (CONFIG.END_HOUR - CONFIG.START_HOUR) * H;
+  currentEvents=events;
+  var root=document.getElementById('calendarRoot');
+  var days=groupByDay(events);
+  var isMobile=window.innerWidth<=CONFIG.MOBILE_BREAKPOINT;
+  var dayNames=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var H=CONFIG.HOUR_HEIGHT;
+  var totalH=(CONFIG.END_HOUR-CONFIG.START_HOUR)*H;
+  var html='<div class="ap-timetable">';
 
-  var html = '<div class="ap-timetable">';
-
-  // Time gutter column
-  html += '<div class="ap-time-col">';
-  html += '<div class="ap-gutter-corner"></div>';
-  html += '<div class="ap-time-gutter" style="height:'+totalH+'px">';
-  for (var h = CONFIG.START_HOUR; h <= CONFIG.END_HOUR; h++) {
-    var top = (h - CONFIG.START_HOUR) * H;
-    html += '<div class="ap-time-label" style="top:'+top+'px">'+hourLabel(h)+'</div>';
+  html+='<div class="ap-time-col"><div class="ap-gutter-corner"></div>';
+  html+='<div class="ap-time-gutter" style="height:'+totalH+'px">';
+  for(var h=CONFIG.START_HOUR;h<=CONFIG.END_HOUR;h++){
+    html+='<div class="ap-time-label" style="top:'+((h-CONFIG.START_HOUR)*H)+'px">'+hourLabel(h)+'</div>';
   }
-  html += '</div></div>';
+  html+='</div></div>';
 
-  // Day columns
-  for (var i = 0; i < days.length; i++) {
-    var day = days[i];
-    var today = isToday(day.date);
-    var hasEvents = day.events.length > 0;
-    var cls = 'ap-day-col' + (today ? ' is-today' : '') + (isMobile && !hasEvents ? ' mobile-hidden' : '');
+  for(var i=0;i<days.length;i++){
+    var day=days[i],today=isToday(day.date),hasEvents=day.events.length>0;
+    var cls='ap-day-col'+(today?' is-today':'')+(isMobile&&!hasEvents?' mobile-hidden':'');
+    html+='<div class="'+cls+'">';
+    html+='<div class="ap-day-hdr"><div class="ap-day-name">'+dayNames[day.date.getDay()]+'</div>';
+    html+='<div class="ap-day-num">'+day.date.getDate()+'</div></div>';
+    html+='<div class="ap-day-body" style="height:'+totalH+'px">';
 
-    html += '<div class="'+cls+'">';
-    html += '<div class="ap-day-hdr">';
-    html += '<div class="ap-day-name">'+dayNames[day.date.getDay()]+'</div>';
-    html += '<div class="ap-day-num">'+day.date.getDate()+'</div>';
-    html += '</div>';
-    html += '<div class="ap-day-body" style="height:'+totalH+'px">';
+    for(var j=0;j<day.events.length;j++){
+      var ev=day.events[j],gi=events.indexOf(ev);
+      var ci=getColorForClass(ev.summary||'Event');
+      var pal=PALETTE[ci];
+      var icon=getSvgIcon(getIconType(ev.summary||''),pal.color);
+      var st=new Date(ev.start.dateTime);
+      var hrs=st.getHours()+st.getMinutes()/60;
+      var topPx=Math.max(0,Math.min(totalH-40,(hrs-CONFIG.START_HOUR)*H));
 
-    for (var j = 0; j < day.events.length; j++) {
-      var ev = day.events[j];
-      var gi = events.indexOf(ev);
-      var ci = getColorForClass(ev.summary || 'Event');
-      var pal = PALETTE[ci];
-      var iconType = getIconType(ev.summary || '');
-      var icon = getSvgIcon(iconType, pal.color);
-
-      var st = new Date(ev.start.dateTime);
-      var hrs = st.getHours() + st.getMinutes() / 60;
-      var topPx = Math.max(0, Math.min(totalH - 40, (hrs - CONFIG.START_HOUR) * H));
-
-      html += '<div class="ap-card" data-idx="'+gi+'" style="top:'+topPx+'px;background:'+pal.bg+'">';
-      html += '<div class="ap-startline" style="background:'+pal.color+'"></div>';
-      html += '<div class="ap-card-inner">';
-      html += '<div class="ap-icon">'+icon+'</div>';
-      html += '<div class="ap-info">';
-      html += '<div class="ap-ev-name">'+escapeHtml(ev.summary||'Untitled')+'</div>';
-      html += '<div class="ap-ev-time">'+formatTimeRange(ev.start.dateTime, ev.end.dateTime)+'</div>';
-      html += '</div></div></div>';
+      html+='<div class="ap-card" data-idx="'+gi+'" style="top:'+topPx+'px">';
+      html+='<div class="ap-startline" style="background:'+pal.color+'"></div>';
+      html+='<div class="ap-card-inner"><div class="ap-icon">'+icon+'</div>';
+      html+='<div class="ap-info"><div class="ap-ev-name">'+escapeHtml(ev.summary||'Untitled')+'</div>';
+      html+='<div class="ap-ev-time">'+formatTimeRange(ev.start.dateTime,ev.end.dateTime)+'</div>';
+      html+='</div></div></div>';
     }
-
-    html += '</div></div>';
+    html+='</div></div>';
   }
-
-  html += '</div>';
-  root.innerHTML = html;
-  renderLegend();
-}
-
-function renderLegend() {
-  var legend = document.getElementById('legend');
-  var entries = Object.entries(colorAssignments).sort(function(a,b){return a[1]-b[1];});
-  if (!entries.length) { legend.innerHTML = ''; return; }
-  var html = '';
-  for (var i = 0; i < entries.length; i++) {
-    var pal = PALETTE[entries[i][1]];
-    var display = entries[i][0].split(' ').map(function(w){return w.charAt(0).toUpperCase()+w.slice(1);}).join(' ');
-    html += '<div class="ap-legend-item"><span class="ap-legend-dot" style="background:'+pal.color+'"></span>'+display+'</div>';
-  }
-  legend.innerHTML = html;
+  html+='</div>';
+  root.innerHTML=html;
 }
 
 /* ---- Modal ---- */
 function showModal(idx) {
-  var ev = currentEvents[idx]; if (!ev) return;
-  var ci = getColorForClass(ev.summary||'Event');
-  var pal = PALETTE[ci];
-  var icon = getSvgIcon(getIconType(ev.summary||''), pal.color);
-  var sd = new Date(ev.start.dateTime);
-
-  var h = '<div class="ap-modal-bar" style="background:'+pal.color+'"></div><div class="ap-modal-body">';
-  h += '<div class="ap-modal-hdr"><div class="ap-modal-icon">'+icon+'</div>';
-  h += '<div class="ap-modal-title">'+escapeHtml(ev.summary||'Untitled')+'</div></div>';
-  h += '<div class="ap-detail"><span class="ap-detail-lbl">Date</span><span class="ap-detail-val">'+formatDateFull(sd)+'</span></div>';
-  h += '<div class="ap-detail"><span class="ap-detail-lbl">Time</span><span class="ap-detail-val">'+formatTimeRange(ev.start.dateTime,ev.end.dateTime)+'</span></div>';
-  if (ev.location) h += '<div class="ap-detail"><span class="ap-detail-lbl">Location</span><span class="ap-detail-val">'+escapeHtml(ev.location)+'</span></div>';
-  if (ev.description) h += '<div class="ap-detail"><span class="ap-detail-lbl">Details</span><span class="ap-detail-val">'+sanitizeDescription(ev.description)+'</span></div>';
-  if (ev.htmlLink) h += '<div class="ap-detail"><span class="ap-detail-lbl">Link</span><span class="ap-detail-val"><a href="'+escapeHtml(ev.htmlLink)+'" target="_blank" rel="noopener">View in Google Calendar</a></span></div>';
-  h += '<button class="ap-modal-close" onclick="closeModal()">Close</button></div>';
-
-  document.getElementById('modalContent').innerHTML = h;
+  var ev=currentEvents[idx];if(!ev)return;
+  var ci=getColorForClass(ev.summary||'Event'),pal=PALETTE[ci];
+  var icon=getSvgIcon(getIconType(ev.summary||''),pal.color);
+  var sd=new Date(ev.start.dateTime);
+  var h='<div class="ap-modal-bar" style="background:'+pal.color+'"></div><div class="ap-modal-body">';
+  h+='<div class="ap-modal-hdr"><div class="ap-modal-icon">'+icon+'</div>';
+  h+='<div class="ap-modal-title">'+escapeHtml(ev.summary||'Untitled')+'</div></div>';
+  h+='<div class="ap-detail"><span class="ap-detail-lbl">Date</span><span class="ap-detail-val">'+formatDateFull(sd)+'</span></div>';
+  h+='<div class="ap-detail"><span class="ap-detail-lbl">Time</span><span class="ap-detail-val">'+formatTimeRange(ev.start.dateTime,ev.end.dateTime)+'</span></div>';
+  if(ev.location)h+='<div class="ap-detail"><span class="ap-detail-lbl">Location</span><span class="ap-detail-val">'+escapeHtml(ev.location)+'</span></div>';
+  if(ev.description)h+='<div class="ap-detail"><span class="ap-detail-lbl">Details</span><span class="ap-detail-val">'+sanitizeDescription(ev.description)+'</span></div>';
+  if(ev.htmlLink)h+='<div class="ap-detail"><span class="ap-detail-lbl">Link</span><span class="ap-detail-val"><a href="'+escapeHtml(ev.htmlLink)+'" target="_blank" rel="noopener">View in Google Calendar</a></span></div>';
+  h+='<button class="ap-modal-close" onclick="closeModal()">Close</button></div>';
+  document.getElementById('modalContent').innerHTML=h;
   document.getElementById('modalOverlay').classList.add('active');
-  document.body.style.overflow = 'hidden';
+  document.body.style.overflow='hidden';
 }
-
 function closeModal(e) {
-  if (e && e.target !== document.getElementById('modalOverlay')) return;
+  if(e&&e.target!==document.getElementById('modalOverlay'))return;
   document.getElementById('modalOverlay').classList.remove('active');
-  document.body.style.overflow = '';
+  document.body.style.overflow='';
 }
-
-document.addEventListener('keydown', function(e) { if (e.key==='Escape') closeModal(); });
-
-document.getElementById('calendarRoot').addEventListener('click', function(e) {
-  var card = e.target.closest('.ap-card');
-  if (card) { var idx = parseInt(card.dataset.idx, 10); if (!isNaN(idx)) showModal(idx); }
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();});
+document.getElementById('calendarRoot').addEventListener('click',function(e){
+  var card=e.target.closest('.ap-card');
+  if(card){var idx=parseInt(card.dataset.idx,10);if(!isNaN(idx))showModal(idx);}
 });
 
-function escapeHtml(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
-function sanitizeDescription(h) { var t = document.createElement('div'); t.innerHTML = h; var b = t.querySelectorAll('script,style,iframe,object,embed'); for (var i=0;i<b.length;i++) b[i].remove(); return t.innerHTML; }
+function escapeHtml(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+function sanitizeDescription(h){var t=document.createElement('div');t.innerHTML=h;var b=t.querySelectorAll('script,style,iframe,object,embed');for(var i=0;i<b.length;i++)b[i].remove();return t.innerHTML;}
+
+function showLoading() {
+  document.getElementById('statusBanner').innerHTML =
+    '<div class="ap-loading-overlay"><div class="ap-loading-box">Loading schedule…</div></div>';
+}
+function hideLoading() {
+  document.getElementById('statusBanner').innerHTML = '';
+}
 
 async function loadCalendar() {
   updateWeekLabel();
-  var banner = document.getElementById('statusBanner');
-  banner.innerHTML = '<div class="ap-loading-msg">Loading schedule…</div>';
+  showLoading();
   renderCalendar([]);
   try {
     var events = await fetchEvents();
-    banner.innerHTML = '';
+    hideLoading();
     renderCalendar(events);
-  } catch (err) {
-    banner.innerHTML = '<div class="ap-setup-msg">'
-      + 'Could not load calendar data. The calendar owner needs to enable '
-      + '"Make available to public" in the calendar\'s Access permissions, '
-      + 'or you can set a Google Calendar API key in <code>CONFIG.API_KEY</code>.'
-      + '<br><small style="color:#aaa !important;margin-top:8px !important;display:block !important">'
-      + escapeHtml(err.message) + '</small></div>';
+  } catch(err) {
+    document.getElementById('statusBanner').innerHTML = '<div class="ap-setup-msg">'
+      +'Could not load calendar data. The calendar owner needs to enable '
+      +'"Make available to public" in the calendar\'s Access permissions, '
+      +'or set a Google Calendar API key in <code>CONFIG.API_KEY</code>.'
+      +'<br><small style="color:#aaa!important;margin-top:8px!important;display:block!important">'
+      +escapeHtml(err.message)+'</small></div>';
   }
 }
 
 var resizeTimer;
-window.addEventListener('resize', function() {
+window.addEventListener('resize',function(){
   clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(function() { renderCalendar(currentEvents); }, 200);
+  resizeTimer=setTimeout(function(){renderCalendar(currentEvents);},200);
 });
 
 loadCalendar();
