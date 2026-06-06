@@ -832,10 +832,16 @@ function renderCalendar(events) {
 
       html+='<div class="ap-card" data-idx="'+gi+'" style="'+posStyle+'">';
       html+='<div class="ap-startline" style="background:'+pal.color+'"></div>';
-      html+='<div class="ap-card-inner"><div class="ap-icon">'+icon+'</div>';
-      html+='<div class="ap-info"><div class="ap-ev-name">'+escapeHtml(name)+'</div>';
-      html+='<div class="ap-ev-time">'+formatTimeRange(ev.start.dateTime,ev.end.dateTime)+'</div>';
-      html+='</div></div></div>';
+      if(lo.totalCols>1){
+        html+='<div class="ap-card-inner"><div class="ap-info"><div class="ap-ev-name">'+escapeHtml(name)+'</div>';
+        html+='<div class="ap-ev-time">'+formatTimeRange(ev.start.dateTime,ev.end.dateTime)+'</div>';
+        html+='</div></div></div>';
+      } else {
+        html+='<div class="ap-card-inner"><div class="ap-icon">'+icon+'</div>';
+        html+='<div class="ap-info"><div class="ap-ev-name">'+escapeHtml(name)+'</div>';
+        html+='<div class="ap-ev-time">'+formatTimeRange(ev.start.dateTime,ev.end.dateTime)+'</div>';
+        html+='</div></div></div>';
+      }
     }
     if(isMobile&&!hasEvents) html+='<div class="ap-no-events">NO EVENTS</div>';
     html+='</div></div>';
