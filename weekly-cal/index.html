@@ -75,9 +75,10 @@
     font-size: 15px !important;
     font-weight: 600 !important;
     color: #555 !important;
-    text-align: left !important;
+    text-align: right !important;
     font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
     text-transform: none !important;
+    margin-left: auto !important;
   }
 
   /* ---- Loading overlay ---- */
@@ -218,22 +219,27 @@
   /* Event cards */
   .atplay-cal .ap-card {
     position: absolute !important;
-    left: 3px !important;
-    right: 3px !important;
     z-index: 2 !important;
     border-radius: 5px !important;
     padding: 0 !important;
     cursor: pointer !important;
-    transition: transform 0.12s, box-shadow 0.12s !important;
-    border: none !important;
+    transition: box-shadow 0.12s, background 0.12s !important;
+    border: 1px solid #eee !important;
     text-decoration: none !important;
     text-align: left !important;
     background: #fff !important;
+    overflow: hidden !important;
   }
   .atplay-cal .ap-card:hover {
-    transform: scale(1.02) !important;
     box-shadow: 0 3px 12px rgba(0,0,0,0.18) !important;
     z-index: 3 !important;
+    background: #f7f8ff !important;
+  }
+  .atplay-cal .ap-cols-3 .ap-ev-name {
+    display: -webkit-box !important;
+    -webkit-line-clamp: 3 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
   }
   .atplay-cal .ap-startline {
     height: 4px !important;
@@ -408,7 +414,6 @@
       border-bottom: 1px solid #e0e0e0 !important;
       border-left: none !important;
     }
-    .atplay-cal .ap-day-col.mobile-hidden { display: none !important; }
     .atplay-cal .ap-day-hdr {
       text-align: left !important;
       padding: 14px 16px 8px !important;
@@ -446,11 +451,25 @@
       display: flex !important;
       flex-direction: column !important;
       gap: 6px !important;
+      min-height: 70px !important;
     }
     .atplay-cal .ap-card {
       position: static !important;
       left: auto !important;
       right: auto !important;
+      width: auto !important;
+      height: auto !important;
+    }
+    .atplay-cal .ap-no-events {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      font-size: 11px !important;
+      color: #bbb !important;
+      font-weight: 600 !important;
+      letter-spacing: 1px !important;
+      flex: 1 !important;
+      font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
     }
     .atplay-cal .ap-card-inner { padding: 8px 10px !important; gap: 8px !important; }
     .atplay-cal .ap-icon { width: 32px !important; height: 32px !important; }
@@ -504,7 +523,7 @@ var CONFIG = {
   MOBILE_BREAKPOINT: 768,
   HOUR_HEIGHT: 60,
   START_HOUR: 8,
-  END_HOUR: 18,
+  END_HOUR: 22,
 };
 
 var ICAL_URL = 'https://calendar.google.com/calendar/ical/'
@@ -575,6 +594,10 @@ function getIconType(name) {
     for (var j = 0; j < ICON_MAP[i].keywords.length; j++)
       if (lower.indexOf(ICON_MAP[i].keywords[j]) !== -1) return ICON_MAP[i].icon;
   return 'default';
+}
+
+function stripEmojis(s) {
+  return s.replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}\u{200D}\u{20E3}\u{E0020}-\u{E007F}]/gu, '').replace(/\s{2,}/g, ' ').trim();
 }
 
 var colorAssignments = {}, nextColorIndex = 0, currentEvents = [];
@@ -696,6 +719,44 @@ function hourLabel(h) {
   if(h===0)return '12 AM';if(h<12)return h+' AM';if(h===12)return '12 PM';return(h-12)+' PM';
 }
 
+function computeOverlapLayout(dayEvents) {
+  var result={};
+  for(var i=0;i<dayEvents.length;i++) result[i]={col:0,totalCols:1};
+  if(dayEvents.length<=1) return result;
+  function overlaps(a,b){
+    return new Date(dayEvents[a].start.dateTime)<new Date(dayEvents[b].end.dateTime)
+        && new Date(dayEvents[b].start.dateTime)<new Date(dayEvents[a].end.dateTime);
+  }
+  var visited={},groups=[];
+  for(var i=0;i<dayEvents.length;i++){
+    if(visited[i])continue;
+    var group=[i];visited[i]=true;var q=0;
+    while(q<group.length){
+      for(var j=0;j<dayEvents.length;j++){
+        if(!visited[j]&&overlaps(group[q],j)){visited[j]=true;group.push(j);}
+      }
+      q++;
+    }
+    groups.push(group);
+  }
+  for(var g=0;g<groups.length;g++){
+    var grp=groups[g];
+    if(grp.length===1)continue;
+    grp.sort(function(a,b){return new Date(dayEvents[a].start.dateTime)-new Date(dayEvents[b].start.dateTime);});
+    var cols=[];
+    for(var i=0;i<grp.length;i++){
+      var idx=grp[i],evStart=new Date(dayEvents[idx].start.dateTime),evEnd=new Date(dayEvents[idx].end.dateTime);
+      var placed=false;
+      for(var c=0;c<cols.length;c++){
+        if(evStart>=cols[c]){cols[c]=evEnd;result[idx].col=c;placed=true;break;}
+      }
+      if(!placed){cols.push(evEnd);result[idx].col=cols.length-1;}
+    }
+    for(var i=0;i<grp.length;i++) result[grp[i]].totalCols=cols.length;
+  }
+  return result;
+}
+
 function renderCalendar(events) {
   currentEvents=events;
   var root=document.getElementById('calendarRoot');
@@ -709,34 +770,46 @@ function renderCalendar(events) {
   html+='<div class="ap-time-col"><div class="ap-gutter-corner"></div>';
   html+='<div class="ap-time-gutter" style="height:'+totalH+'px">';
   for(var h=CONFIG.START_HOUR;h<=CONFIG.END_HOUR;h++){
+    if(h===CONFIG.START_HOUR||h===CONFIG.END_HOUR)continue;
     html+='<div class="ap-time-label" style="top:'+((h-CONFIG.START_HOUR)*H)+'px">'+hourLabel(h)+'</div>';
   }
   html+='</div></div>';
 
   for(var i=0;i<days.length;i++){
     var day=days[i],today=isToday(day.date),hasEvents=day.events.length>0;
-    var cls='ap-day-col'+(today?' is-today':'')+(isMobile&&!hasEvents?' mobile-hidden':'');
+    var cls='ap-day-col'+(today?' is-today':'');
     html+='<div class="'+cls+'">';
     html+='<div class="ap-day-hdr"><div class="ap-day-name">'+dayNames[day.date.getDay()]+'</div>';
     html+='<div class="ap-day-num">'+day.date.getDate()+'</div></div>';
     html+='<div class="ap-day-body" style="height:'+totalH+'px">';
 
+    var layout=computeOverlapLayout(day.events);
     for(var j=0;j<day.events.length;j++){
       var ev=day.events[j],gi=events.indexOf(ev);
-      var ci=getColorForClass(ev.summary||'Event');
+      var name=stripEmojis(ev.summary||'')||'Untitled';
+      var ci=getColorForClass(name);
       var pal=PALETTE[ci];
-      var icon=getSvgIcon(getIconType(ev.summary||''),pal.color);
+      var icon=getSvgIcon(getIconType(name),pal.color);
       var st=new Date(ev.start.dateTime);
-      var hrs=st.getHours()+st.getMinutes()/60;
-      var topPx=Math.max(0,Math.min(totalH-40,(hrs-CONFIG.START_HOUR)*H));
+      var et=new Date(ev.end.dateTime);
+      var startHrs=st.getHours()+st.getMinutes()/60;
+      var endHrs=et.getHours()+et.getMinutes()/60;
+      var topPx=Math.max(0,(startHrs-CONFIG.START_HOUR)*H);
+      var heightPx=Math.max(30,(endHrs-startHrs)*H);
+      var lo=layout[j];
+      var colPct=(lo.col/lo.totalCols*100);
+      var widthPct=(100/lo.totalCols);
+      var posStyle='top:'+topPx+'px;height:'+heightPx+'px;left:calc('+colPct+'% + 2px);width:calc('+widthPct+'% - 4px)';
+      var extraCls=lo.totalCols>=3?' ap-cols-3':'';
 
-      html+='<div class="ap-card" data-idx="'+gi+'" style="top:'+topPx+'px">';
+      html+='<div class="ap-card'+extraCls+'" data-idx="'+gi+'" style="'+posStyle+'">';
       html+='<div class="ap-startline" style="background:'+pal.color+'"></div>';
       html+='<div class="ap-card-inner"><div class="ap-icon">'+icon+'</div>';
-      html+='<div class="ap-info"><div class="ap-ev-name">'+escapeHtml(ev.summary||'Untitled')+'</div>';
+      html+='<div class="ap-info"><div class="ap-ev-name">'+escapeHtml(name)+'</div>';
       html+='<div class="ap-ev-time">'+formatTimeRange(ev.start.dateTime,ev.end.dateTime)+'</div>';
       html+='</div></div></div>';
     }
+    if(isMobile&&!hasEvents) html+='<div class="ap-no-events">NO EVENTS</div>';
     html+='</div></div>';
   }
   html+='</div>';
@@ -746,12 +819,13 @@ function renderCalendar(events) {
 /* ---- Modal ---- */
 function showModal(idx) {
   var ev=currentEvents[idx];if(!ev)return;
-  var ci=getColorForClass(ev.summary||'Event'),pal=PALETTE[ci];
-  var icon=getSvgIcon(getIconType(ev.summary||''),pal.color);
+  var name=stripEmojis(ev.summary||'')||'Untitled';
+  var ci=getColorForClass(name),pal=PALETTE[ci];
+  var icon=getSvgIcon(getIconType(name),pal.color);
   var sd=new Date(ev.start.dateTime);
   var h='<div class="ap-modal-bar" style="background:'+pal.color+'"></div><div class="ap-modal-body">';
   h+='<div class="ap-modal-hdr"><div class="ap-modal-icon">'+icon+'</div>';
-  h+='<div class="ap-modal-title">'+escapeHtml(ev.summary||'Untitled')+'</div></div>';
+  h+='<div class="ap-modal-title">'+escapeHtml(name)+'</div></div>';
   h+='<div class="ap-detail"><span class="ap-detail-lbl">Date</span><span class="ap-detail-val">'+formatDateFull(sd)+'</span></div>';
   h+='<div class="ap-detail"><span class="ap-detail-lbl">Time</span><span class="ap-detail-val">'+formatTimeRange(ev.start.dateTime,ev.end.dateTime)+'</span></div>';
   if(ev.location)h+='<div class="ap-detail"><span class="ap-detail-lbl">Location</span><span class="ap-detail-val">'+escapeHtml(ev.location)+'</span></div>';
