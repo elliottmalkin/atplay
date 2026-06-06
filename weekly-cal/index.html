@@ -72,7 +72,7 @@
     background: #FDEAF2 !important;
   }
   .atplay-cal .ap-week-label {
-    font-size: 15px !important;
+    font-size: 13px !important;
     font-weight: 600 !important;
     color: #555 !important;
     text-align: right !important;
@@ -132,7 +132,6 @@
     background: #fff !important;
     display: flex !important;
     flex-direction: column !important;
-    border-right: 1px solid #e0e0e0 !important;
   }
   .atplay-cal .ap-gutter-corner {
     border-bottom: 1px solid #e0e0e0 !important;
@@ -193,10 +192,16 @@
     margin-top: 3px !important;
     width: 24px !important;
     height: 24px !important;
+    min-width: 24px !important;
+    max-width: 24px !important;
+    min-height: 24px !important;
+    max-height: 24px !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
     border-radius: 50% !important;
+    padding: 0 !important;
+    flex-shrink: 0 !important;
   }
   .atplay-cal .ap-day-col.is-today .ap-day-num {
     background: var(--ap-color-3) !important;
@@ -220,26 +225,24 @@
   .atplay-cal .ap-card {
     position: absolute !important;
     z-index: 2 !important;
-    border-radius: 5px !important;
+    border-radius: 5px 5px 0 0 !important;
     padding: 0 !important;
     cursor: pointer !important;
     transition: box-shadow 0.12s, background 0.12s !important;
     border: 1px solid #eee !important;
+    border-bottom: none !important;
     text-decoration: none !important;
     text-align: left !important;
     background: #fff !important;
-    overflow: hidden !important;
+    overflow: visible !important;
   }
   .atplay-cal .ap-card:hover {
     box-shadow: 0 3px 12px rgba(0,0,0,0.18) !important;
     z-index: 3 !important;
     background: #f7f8ff !important;
   }
-  .atplay-cal .ap-cols-3 .ap-ev-name {
-    display: -webkit-box !important;
-    -webkit-line-clamp: 3 !important;
-    -webkit-box-orient: vertical !important;
-    overflow: hidden !important;
+  .atplay-cal .ap-card:hover .ap-card-inner {
+    background: #f7f8ff !important;
   }
   .atplay-cal .ap-startline {
     height: 4px !important;
@@ -251,6 +254,8 @@
     display: flex !important;
     align-items: flex-start !important;
     gap: 5px !important;
+    background: #fff !important;
+    position: relative !important;
   }
   .atplay-cal .ap-icon {
     flex-shrink: 0 !important;
@@ -523,7 +528,7 @@ var CONFIG = {
   MOBILE_BREAKPOINT: 768,
   HOUR_HEIGHT: 60,
   START_HOUR: 8,
-  END_HOUR: 22,
+  END_HOUR: 21,
 };
 
 var ICAL_URL = 'https://calendar.google.com/calendar/ical/'
@@ -628,8 +633,17 @@ function updateWeekLabel() {
   var end = addDays(currentWeekStart,6);
   document.getElementById('weekLabel').textContent = formatDate(currentWeekStart)+' – '+formatDate(end)+', '+end.getFullYear();
 }
-function navigateWeek(dir) { currentWeekStart = addDays(currentWeekStart,dir*7); loadCalendar(); }
-function navigateToday() { currentWeekStart = getWeekStart(new Date()); loadCalendar(); }
+var allCachedEvents = null;
+function navigateWeek(dir) {
+  currentWeekStart=addDays(currentWeekStart,dir*7);
+  updateWeekLabel();
+  if(allCachedEvents) renderCalendar(filterWeekEvents(allCachedEvents,currentWeekStart));
+}
+function navigateToday() {
+  currentWeekStart=getWeekStart(new Date());
+  updateWeekLabel();
+  if(allCachedEvents) renderCalendar(filterWeekEvents(allCachedEvents,currentWeekStart));
+}
 
 /* ---- iCal ---- */
 function parseICalDate(s) {
@@ -663,14 +677,18 @@ function parseICal(text) {
   }
   return events;
 }
-function normalizeEvents(ical,ws,we) {
+function normalizeAllEvents(ical) {
   return ical.filter(function(e){
     if(!e.dtstart)return false;
     var allDay=e.dtstart.getHours()===0&&e.dtstart.getMinutes()===0&&e.dtend&&e.dtend.getHours()===0&&e.dtend.getMinutes()===0&&(e.dtend-e.dtstart)>=86400000;
-    return !allDay&&e.dtstart>=ws&&e.dtstart<we;
+    return !allDay;
   }).sort(function(a,b){return a.dtstart-b.dtstart;}).map(function(e){
     return {summary:e.summary||'Untitled',start:{dateTime:e.dtstart.toISOString()},end:{dateTime:(e.dtend||new Date(e.dtstart.getTime()+3600000)).toISOString()},description:e.description||'',location:e.location||'',htmlLink:''};
   });
+}
+function filterWeekEvents(events, weekStart) {
+  var weekEnd=addDays(weekStart,7);
+  return events.filter(function(e){var d=new Date(e.start.dateTime);return d>=weekStart&&d<weekEnd;});
 }
 
 /* ---- Fetch ---- */
@@ -682,21 +700,23 @@ async function fetchViaICal() {
       if(!res.ok)throw new Error('HTTP '+res.status);
       var text=await res.text();
       if(text.indexOf('BEGIN:VCALENDAR')===-1)throw new Error('Not iCal');
-      return normalizeEvents(parseICal(text),currentWeekStart,addDays(currentWeekStart,7));
+      return normalizeAllEvents(parseICal(text));
     } catch(e){errors.push('Proxy '+(i+1)+': '+e.message);}
   }
   throw new Error(errors.join(' | '));
 }
 async function fetchViaGoogleEmbed() {
   var calId=encodeURIComponent(CONFIG.CALENDAR_ID);
-  var url='https://www.googleapis.com/calendar/v3/calendars/'+calId+'/events?key=AIzaSyBNlYH01_9Hc5S1J9vuFmu2nUqBZJNAXxs&timeMin='+currentWeekStart.toISOString()+'&timeMax='+addDays(currentWeekStart,7).toISOString()+'&singleEvents=true&orderBy=startTime&timeZone='+CONFIG.TIMEZONE+'&maxResults=250';
+  var rangeStart=addDays(new Date(),-90),rangeEnd=addDays(new Date(),90);
+  var url='https://www.googleapis.com/calendar/v3/calendars/'+calId+'/events?key=AIzaSyBNlYH01_9Hc5S1J9vuFmu2nUqBZJNAXxs&timeMin='+rangeStart.toISOString()+'&timeMax='+rangeEnd.toISOString()+'&singleEvents=true&orderBy=startTime&timeZone='+CONFIG.TIMEZONE+'&maxResults=2500';
   var res=await fetch(url);if(!res.ok)throw new Error('Embed API '+res.status);
   var data=await res.json();return(data.items||[]).filter(function(e){return e.start&&e.start.dateTime;});
 }
 async function fetchViaAPI() {
   if(!CONFIG.API_KEY)throw new Error('No API key');
   var calId=encodeURIComponent(CONFIG.CALENDAR_ID);
-  var url='https://www.googleapis.com/calendar/v3/calendars/'+calId+'/events?key='+CONFIG.API_KEY+'&timeMin='+currentWeekStart.toISOString()+'&timeMax='+addDays(currentWeekStart,7).toISOString()+'&singleEvents=true&orderBy=startTime&timeZone='+CONFIG.TIMEZONE+'&maxResults=250';
+  var rangeStart=addDays(new Date(),-90),rangeEnd=addDays(new Date(),90);
+  var url='https://www.googleapis.com/calendar/v3/calendars/'+calId+'/events?key='+CONFIG.API_KEY+'&timeMin='+rangeStart.toISOString()+'&timeMax='+rangeEnd.toISOString()+'&singleEvents=true&orderBy=startTime&timeZone='+CONFIG.TIMEZONE+'&maxResults=2500';
   var res=await fetch(url);if(!res.ok)throw new Error('API '+res.status);
   var data=await res.json();return(data.items||[]).filter(function(e){return e.start&&e.start.dateTime;});
 }
@@ -719,13 +739,19 @@ function hourLabel(h) {
   if(h===0)return '12 AM';if(h<12)return h+' AM';if(h===12)return '12 PM';return(h-12)+' PM';
 }
 
+var MIN_VISUAL_MINUTES = 50;
 function computeOverlapLayout(dayEvents) {
   var result={};
   for(var i=0;i<dayEvents.length;i++) result[i]={col:0,totalCols:1};
   if(dayEvents.length<=1) return result;
+  function visualEnd(ev){
+    var s=new Date(ev.start.dateTime),e=new Date(ev.end.dateTime);
+    var minE=new Date(s.getTime()+MIN_VISUAL_MINUTES*60000);
+    return e>minE?e:minE;
+  }
   function overlaps(a,b){
-    return new Date(dayEvents[a].start.dateTime)<new Date(dayEvents[b].end.dateTime)
-        && new Date(dayEvents[b].start.dateTime)<new Date(dayEvents[a].end.dateTime);
+    return new Date(dayEvents[a].start.dateTime)<visualEnd(dayEvents[b])
+        && new Date(dayEvents[b].start.dateTime)<visualEnd(dayEvents[a]);
   }
   var visited={},groups=[];
   for(var i=0;i<dayEvents.length;i++){
@@ -745,12 +771,13 @@ function computeOverlapLayout(dayEvents) {
     grp.sort(function(a,b){return new Date(dayEvents[a].start.dateTime)-new Date(dayEvents[b].start.dateTime);});
     var cols=[];
     for(var i=0;i<grp.length;i++){
-      var idx=grp[i],evStart=new Date(dayEvents[idx].start.dateTime),evEnd=new Date(dayEvents[idx].end.dateTime);
+      var idx=grp[i],evStart=new Date(dayEvents[idx].start.dateTime);
+      var vEnd=visualEnd(dayEvents[idx]);
       var placed=false;
       for(var c=0;c<cols.length;c++){
-        if(evStart>=cols[c]){cols[c]=evEnd;result[idx].col=c;placed=true;break;}
+        if(evStart>=cols[c]){cols[c]=vEnd;result[idx].col=c;placed=true;break;}
       }
-      if(!placed){cols.push(evEnd);result[idx].col=cols.length-1;}
+      if(!placed){cols.push(vEnd);result[idx].col=cols.length-1;}
     }
     for(var i=0;i<grp.length;i++) result[grp[i]].totalCols=cols.length;
   }
@@ -800,9 +827,8 @@ function renderCalendar(events) {
       var colPct=(lo.col/lo.totalCols*100);
       var widthPct=(100/lo.totalCols);
       var posStyle='top:'+topPx+'px;height:'+heightPx+'px;left:calc('+colPct+'% + 2px);width:calc('+widthPct+'% - 4px)';
-      var extraCls=lo.totalCols>=3?' ap-cols-3':'';
 
-      html+='<div class="ap-card'+extraCls+'" data-idx="'+gi+'" style="'+posStyle+'">';
+      html+='<div class="ap-card" data-idx="'+gi+'" style="'+posStyle+'">';
       html+='<div class="ap-startline" style="background:'+pal.color+'"></div>';
       html+='<div class="ap-card-inner"><div class="ap-icon">'+icon+'</div>';
       html+='<div class="ap-info"><div class="ap-ev-name">'+escapeHtml(name)+'</div>';
@@ -863,9 +889,9 @@ async function loadCalendar() {
   showLoading();
   renderCalendar([]);
   try {
-    var events = await fetchEvents();
+    allCachedEvents = await fetchEvents();
     hideLoading();
-    renderCalendar(events);
+    renderCalendar(filterWeekEvents(allCachedEvents, currentWeekStart));
   } catch(err) {
     document.getElementById('statusBanner').innerHTML = '<div class="ap-setup-msg">'
       +'Could not load calendar data. The calendar owner needs to enable '
