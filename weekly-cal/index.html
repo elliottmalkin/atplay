@@ -258,9 +258,7 @@
     position: relative !important;
   }
   .atplay-cal .ap-icon {
-    flex-shrink: 0 !important;
-    width: 22px !important;
-    height: 22px !important;
+    display: none !important;
   }
   .atplay-cal .ap-icon svg {
     width: 22px !important;
@@ -631,7 +629,7 @@ function fmtTime(d,showPeriod) {
   var h=d.getHours(),m=d.getMinutes(),p=h>=12?'PM':'AM';
   h=h%12||12;
   var t=m===0?String(h):h+':'+String(m).padStart(2,'0');
-  return showPeriod?t+' '+p:t;
+  return showPeriod?t+' '+p:t;
 }
 function formatTime(s) { var d=new Date(s);return fmtTime(d,true); }
 function formatTimeRange(a,b) { return fmtTime(new Date(a),false)+' – '+fmtTime(new Date(b),true); }
