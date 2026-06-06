@@ -81,7 +81,11 @@
     margin-left: auto !important;
   }
 
-  /* ---- Loading overlay ---- */
+  /* ---- Loading spinner ---- */
+  @keyframes ap-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
   .atplay-cal .ap-loading-overlay {
     position: fixed !important;
     inset: 0 !important;
@@ -89,24 +93,23 @@
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    background: rgba(255,255,255,0.4) !important;
+    background: transparent !important;
     pointer-events: none !important;
   }
-  .atplay-cal .ap-loading-box {
-    width: 480px !important;
-    height: 320px !important;
-    max-width: 90vw !important;
-    max-height: 80vh !important;
+  .atplay-cal .ap-loading-wrap {
+    width: 90px !important;
+    height: 90px !important;
     background: #fff !important;
-    border: 1px solid #ddd !important;
-    border-radius: 12px !important;
+    border-radius: 50% !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
-    font-size: 15px !important;
-    color: #999 !important;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.08) !important;
+    border: none !important;
+  }
+  .atplay-cal .ap-loading-wrap svg {
+    width: 70px !important;
+    height: 70px !important;
+    animation: ap-spin 1.8s linear infinite !important;
   }
   .atplay-cal .ap-setup-msg {
     padding: 20px 24px !important;
@@ -482,11 +485,6 @@
       min-height: 100vh !important;
     }
     .atplay-cal .ap-modal-body { padding: 20px 16px !important; }
-
-    .atplay-cal .ap-loading-box {
-      width: 320px !important;
-      height: 200px !important;
-    }
   }
 </style>
 </head>
@@ -890,8 +888,16 @@ function escapeHtml(s){var d=document.createElement('div');d.textContent=s;retur
 function sanitizeDescription(h){var t=document.createElement('div');t.innerHTML=h;var b=t.querySelectorAll('script,style,iframe,object,embed');for(var i=0;i<b.length;i++)b[i].remove();return t.innerHTML;}
 
 function showLoading() {
+  var logo='<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">'
+    +'<circle cx="50" cy="50" r="50" fill="#5DADE2"/>'
+    +'<text fill="#fff" font-family="\'Open Sans\',sans-serif" font-weight="700">'
+    +'<tspan x="22" y="40" font-size="28">p</tspan>'
+    +'<tspan x="55" y="48" font-size="24">a</tspan>'
+    +'<tspan x="30" y="70" font-size="34">L</tspan>'
+    +'<tspan x="58" y="78" font-size="28">y</tspan>'
+    +'</text></svg>';
   document.getElementById('statusBanner').innerHTML =
-    '<div class="ap-loading-overlay"><div class="ap-loading-box">Loading schedule…</div></div>';
+    '<div class="ap-loading-overlay"><div class="ap-loading-wrap">'+logo+'</div></div>';
 }
 function hideLoading() {
   document.getElementById('statusBanner').innerHTML = '';
