@@ -602,7 +602,9 @@ function getIconType(name) {
 }
 
 function stripEmojis(s) {
-  return s.replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}\u{200D}\u{20E3}\u{E0020}-\u{E007F}]/gu, '').replace(/\s{2,}/g, ' ').trim();
+  s=s.replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}\u{200D}\u{20E3}\u{E0020}-\u{E007F}]/gu, '');
+  s=s.replace(/^[^\p{L}\p{N}]+/gu,'');
+  return s.replace(/\s{2,}/g, ' ').trim();
 }
 
 var colorAssignments = {}, nextColorIndex = 0, currentEvents = [];
@@ -625,8 +627,14 @@ function getWeekStart(d) { var r = new Date(d); r.setDate(r.getDate()-r.getDay()
 function addDays(d,n) { var r = new Date(d); r.setDate(r.getDate()+n); return r; }
 function formatDate(d) { return d.toLocaleDateString('en-US',{month:'short',day:'numeric'}); }
 function formatDateFull(d) { return d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}); }
-function formatTime(s) { return new Date(s).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true}); }
-function formatTimeRange(a,b) { return formatTime(a)+' – '+formatTime(b); }
+function fmtTime(d,showPeriod) {
+  var h=d.getHours(),m=d.getMinutes(),p=h>=12?'PM':'AM';
+  h=h%12||12;
+  var t=m===0?String(h):h+':'+String(m).padStart(2,'0');
+  return showPeriod?t+' '+p:t;
+}
+function formatTime(s) { var d=new Date(s);return fmtTime(d,true); }
+function formatTimeRange(a,b) { return fmtTime(new Date(a),false)+' – '+fmtTime(new Date(b),true); }
 function isSameDay(a,b) { return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate(); }
 function isToday(d) { return isSameDay(d,new Date()); }
 function updateWeekLabel() {
