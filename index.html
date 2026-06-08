@@ -885,7 +885,7 @@ function renderCalendar(events) {
       var colPct=(lo.col/lo.totalCols*100);
       var widthPct=(100/lo.totalCols);
       var bgColor=hexToRgba(pal.color,0.2);
-      var posStyle='top:'+topPx+'px;height:'+heightPx+'px;left:calc('+colPct+'% + 2px);width:calc('+widthPct+'% - 4px);background:'+bgColor;
+      var posStyle='top:'+topPx+'px;height:'+heightPx+'px;left:calc('+colPct+'% + 2px);width:calc('+widthPct+'% - 4px);background:linear-gradient('+bgColor+','+bgColor+'),#fff';
 
       html+='<div class="ap-card" data-idx="'+gi+'" style="'+posStyle+'">';
       html+='<div class="ap-startline" style="background:'+pal.color+'"></div>';
