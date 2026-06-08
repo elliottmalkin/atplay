@@ -82,7 +82,7 @@
     to { transform: rotate(360deg); }
   }
   .atplay-cal .ap-loading-overlay {
-    position: fixed !important;
+    position: absolute !important;
     inset: 0 !important;
     z-index: 99998 !important;
     display: flex !important;
@@ -159,6 +159,9 @@
     flex-direction: column !important;
     min-width: 0 !important;
     border-left: 1px solid #e8e8e8 !important;
+  }
+  .atplay-cal .ap-day-col:last-child {
+    border-right: 1px solid #e8e8e8 !important;
   }
   .atplay-cal .ap-day-hdr {
     padding: 10px 4px 6px 4px !important;
@@ -486,7 +489,7 @@
 </head>
 <body>
 
-<div class="ap-page-wrap" style="width:80%;max-width:80%;margin:0 auto;max-height:600px;overflow:auto">
+<div class="ap-page-wrap" style="width:80%;max-width:80%;margin:0 auto;max-height:600px;overflow:auto;position:relative;border-bottom:1px solid #e8e8e8">
 <div class="atplay-cal">
 
   <div class="ap-header">
