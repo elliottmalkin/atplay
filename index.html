@@ -415,17 +415,17 @@
     .atplay-cal .ap-week-label { font-size: 14px !important; }
     .atplay-cal .ap-week-nav button { padding: 6px 10px !important; font-size: 12px !important; }
 
-    .atplay-cal .ap-timetable {
+    .atplay-cal:not(.ap-3day) .ap-timetable {
       display: block !important;
       background: transparent !important;
     }
-    .atplay-cal .ap-time-col { display: none !important; }
-    .atplay-cal .ap-day-col {
+    .atplay-cal:not(.ap-3day) .ap-time-col { display: none !important; }
+    .atplay-cal:not(.ap-3day) .ap-day-col {
       display: block !important;
       border-bottom: 1px solid #e0e0e0 !important;
       border-left: none !important;
     }
-    .atplay-cal .ap-day-hdr {
+    .atplay-cal:not(.ap-3day) .ap-day-hdr {
       text-align: left !important;
       padding: 14px 16px 8px !important;
       display: flex !important;
@@ -435,8 +435,8 @@
       border-bottom: none !important;
       height: auto !important;
     }
-    .atplay-cal .ap-day-name { font-size: 13px !important; }
-    .atplay-cal .ap-day-num {
+    .atplay-cal:not(.ap-3day) .ap-day-name { font-size: 13px !important; }
+    .atplay-cal:not(.ap-3day) .ap-day-num {
       font-size: 16px !important;
       margin-top: 0 !important;
       width: auto !important;
@@ -445,7 +445,7 @@
       border-radius: 0 !important;
       background: none !important;
     }
-    .atplay-cal .ap-day-col.is-today .ap-day-num {
+    .atplay-cal:not(.ap-3day) .ap-day-col.is-today .ap-day-num {
       background: var(--ap-color-3) !important;
       color: #fff !important;
       width: 26px !important;
@@ -453,7 +453,7 @@
       display: inline-flex !important;
       border-radius: 50% !important;
     }
-    .atplay-cal .ap-day-body {
+    .atplay-cal:not(.ap-3day) .ap-day-body {
       height: auto !important;
       position: static !important;
       background-image: none !important;
@@ -464,14 +464,14 @@
       gap: 6px !important;
       min-height: 70px !important;
     }
-    .atplay-cal .ap-card {
+    .atplay-cal:not(.ap-3day) .ap-card {
       position: static !important;
       left: auto !important;
       right: auto !important;
       width: auto !important;
       height: auto !important;
     }
-    .atplay-cal .ap-no-events {
+    .atplay-cal:not(.ap-3day) .ap-no-events {
       display: flex !important;
       align-items: center !important;
       justify-content: center !important;
@@ -482,11 +482,11 @@
       flex: 1 !important;
       font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
     }
-    .atplay-cal .ap-card-inner { padding: 8px 10px !important; gap: 8px !important; }
-    .atplay-cal .ap-icon { width: 32px !important; height: 32px !important; }
-    .atplay-cal .ap-icon svg { width: 32px !important; height: 32px !important; }
-    .atplay-cal .ap-ev-name { font-size: 14px !important; }
-    .atplay-cal .ap-ev-time { font-size: 12px !important; }
+    .atplay-cal:not(.ap-3day) .ap-card-inner { padding: 8px 10px !important; gap: 8px !important; }
+    .atplay-cal:not(.ap-3day) .ap-icon { width: 32px !important; height: 32px !important; }
+    .atplay-cal:not(.ap-3day) .ap-icon svg { width: 32px !important; height: 32px !important; }
+    .atplay-cal:not(.ap-3day) .ap-ev-name { font-size: 14px !important; }
+    .atplay-cal:not(.ap-3day) .ap-ev-time { font-size: 12px !important; }
 
     .atplay-cal .ap-modal {
       width: 100% !important;
@@ -496,8 +496,12 @@
       min-height: 100vh !important;
     }
     .atplay-cal .ap-modal-body { padding: 20px 16px !important; }
+
+    .atplay-cal.ap-3day .ap-timetable {
+      grid-template-columns: 52px repeat(3, 1fr) !important;
+    }
   }
-  #ap-loader {
+  #ap-loader, #ap-loader2 {
     position: absolute !important;
     inset: 0 !important;
     z-index: 99998 !important;
@@ -506,7 +510,7 @@
     justify-content: center !important;
     pointer-events: none !important;
   }
-  #ap-loader .ap-loading-wrap {
+  #ap-loader .ap-loading-wrap, #ap-loader2 .ap-loading-wrap {
     width: 120px !important;
     height: 120px !important;
     background: #fff !important;
@@ -516,7 +520,7 @@
     justify-content: center !important;
     border: none !important;
   }
-  #ap-loader .ap-loading-wrap img {
+  #ap-loader .ap-loading-wrap img, #ap-loader2 .ap-loading-wrap img {
     width: 94px !important;
     height: 94px !important;
     animation: ap-spin 1.8s linear infinite !important;
@@ -539,6 +543,31 @@
 </style>
 </head>
 <body>
+
+<div class="ap-page-wrap" style="width:80%;max-width:80%;margin:0 auto 40px;max-height:600px;position:relative">
+<div id="ap-loader2"></div>
+<div class="ap-scroll-area">
+<div class="atplay-cal ap-3day">
+
+  <div class="ap-header">
+    <div class="ap-week-nav">
+      <button onclick="navigateWeek2(-1)" aria-label="Previous week">&larr; Prev</button>
+      <button class="ap-today-btn" onclick="navigateToday2()">Today</button>
+      <button onclick="navigateWeek2(1)" aria-label="Next week">Next &rarr;</button>
+    </div>
+    <div class="ap-week-label" id="weekLabel2"></div>
+  </div>
+
+  <div id="statusBanner2"></div>
+  <div id="calendarRoot2"></div>
+
+  <div class="ap-overlay" id="modalOverlay2" onclick="closeModal2(event)">
+    <div class="ap-modal" id="modalContent2" onclick="event.stopPropagation()"></div>
+  </div>
+
+</div>
+</div>
+</div>
 
 <div class="ap-page-wrap" style="width:80%;max-width:80%;margin:0 auto;max-height:600px;position:relative">
 <div id="ap-loader"></div>
@@ -931,7 +960,7 @@ function closeModal(e) {
   document.getElementById('modalOverlay').classList.remove('active');
   document.body.style.overflow='';
 }
-document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeModal();closeModal2();}});
 document.getElementById('calendarRoot').addEventListener('click',function(e){
   var card=e.target.closest('.ap-card');
   if(card){var idx=parseInt(card.dataset.idx,10);if(!isNaN(idx))showModal(idx);}
@@ -949,14 +978,146 @@ function hideLoading() {
   document.getElementById('ap-loader').innerHTML = '';
 }
 
+/* ---- Calendar 2 (3-day mobile) ---- */
+var currentWeekStart2 = getWeekStart(new Date());
+var currentDayStart2 = (function(){ var d = new Date(); d.setHours(0,0,0,0); return d; })();
+var currentEvents2 = [];
+
+function isMobile2() { return window.innerWidth <= CONFIG.MOBILE_BREAKPOINT; }
+
+function updateWeekLabel2() {
+  var mob = isMobile2();
+  var start = mob ? currentDayStart2 : currentWeekStart2;
+  var end = addDays(start, mob ? 2 : 6);
+  document.getElementById('weekLabel2').textContent = formatDate(start) + ' – ' + formatDate(end) + ', ' + end.getFullYear();
+}
+
+function filterEvents2(events) {
+  if (isMobile2()) {
+    var end = addDays(currentDayStart2, 3);
+    return events.filter(function(e) { var d = new Date(e.start.dateTime); return d >= currentDayStart2 && d < end; });
+  }
+  return filterWeekEvents(events, currentWeekStart2);
+}
+
+function navigateWeek2(dir) {
+  if (isMobile2()) currentDayStart2 = addDays(currentDayStart2, dir * 3);
+  else currentWeekStart2 = addDays(currentWeekStart2, dir * 7);
+  updateWeekLabel2();
+  if (allCachedEvents) renderCalendar2(filterEvents2(allCachedEvents));
+}
+
+function navigateToday2() {
+  currentWeekStart2 = getWeekStart(new Date());
+  currentDayStart2 = (function(){ var d = new Date(); d.setHours(0,0,0,0); return d; })();
+  updateWeekLabel2();
+  if (allCachedEvents) renderCalendar2(filterEvents2(allCachedEvents));
+}
+
+function groupByDay2(events) {
+  var mob = isMobile2(), numDays = mob ? 3 : 7;
+  var start = mob ? currentDayStart2 : currentWeekStart2;
+  var days = [];
+  for (var i = 0; i < numDays; i++) days.push({ date: addDays(start, i), events: [] });
+  for (var j = 0; j < events.length; j++) {
+    var d = new Date(events[j].start.dateTime);
+    for (var k = 0; k < days.length; k++) if (isSameDay(d, days[k].date)) { days[k].events.push(events[j]); break; }
+  }
+  return days;
+}
+
+function renderCalendar2(events) {
+  currentEvents2 = events;
+  var root = document.getElementById('calendarRoot2');
+  var days = groupByDay2(events);
+  var numDays = days.length;
+  var dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var H = CONFIG.HOUR_HEIGHT, totalH = (CONFIG.END_HOUR - CONFIG.START_HOUR) * H;
+  var html = '<div class="ap-timetable" style="grid-template-columns: 52px repeat(' + numDays + ', 1fr) !important">';
+  html += '<div class="ap-time-col"><div class="ap-gutter-corner"></div>';
+  html += '<div class="ap-time-gutter" style="height:' + totalH + 'px">';
+  for (var h = CONFIG.START_HOUR; h <= CONFIG.END_HOUR; h++) {
+    if (h === CONFIG.START_HOUR || h === CONFIG.END_HOUR) continue;
+    html += '<div class="ap-time-label" style="top:' + ((h - CONFIG.START_HOUR) * H) + 'px">' + hourLabel(h) + '</div>';
+  }
+  html += '</div></div>';
+  for (var i = 0; i < days.length; i++) {
+    var day = days[i], today = isToday(day.date);
+    html += '<div class="ap-day-col' + (today ? ' is-today' : '') + '">';
+    html += '<div class="ap-day-hdr"><div class="ap-day-name">' + dayNames[day.date.getDay()] + '</div>';
+    html += '<div class="ap-day-num">' + day.date.getDate() + '</div></div>';
+    html += '<div class="ap-day-body" style="height:' + totalH + 'px">';
+    var layout = computeOverlapLayout(day.events);
+    for (var j = 0; j < day.events.length; j++) {
+      var ev = day.events[j], gi = events.indexOf(ev);
+      var name = stripEmojis(ev.summary || '') || 'Untitled';
+      var ci = getColorForClass(name), pal = PALETTE[ci];
+      var icon = getSvgIcon(getIconType(name), pal.color);
+      var st = new Date(ev.start.dateTime), et = new Date(ev.end.dateTime);
+      var topPx = Math.max(0, (st.getHours() + st.getMinutes() / 60 - CONFIG.START_HOUR) * H);
+      var heightPx = Math.max(30, (et.getHours() + et.getMinutes() / 60 - st.getHours() - st.getMinutes() / 60) * H);
+      var lo = layout[j], colPct = lo.col / lo.totalCols * 100, widthPct = 100 / lo.totalCols;
+      var bgColor = hexToRgba(pal.color, 0.2);
+      var posStyle = 'top:' + topPx + 'px;height:' + heightPx + 'px;left:calc(' + colPct + '% + 2px);width:calc(' + widthPct + '% - 4px);background:linear-gradient(' + bgColor + ',' + bgColor + '),#fff';
+      html += '<div class="ap-card" data-idx2="' + gi + '" style="' + posStyle + '">';
+      html += '<div class="ap-startline" style="background:' + pal.color + '"></div>';
+      if (lo.totalCols > 1) {
+        html += '<div class="ap-card-inner"><div class="ap-info"><div class="ap-ev-name">' + escapeHtml(name) + '</div>';
+        html += '<div class="ap-ev-time">' + formatTimeRange(ev.start.dateTime, ev.end.dateTime) + '</div></div></div></div>';
+      } else {
+        html += '<div class="ap-card-inner"><div class="ap-icon">' + icon + '</div>';
+        html += '<div class="ap-info"><div class="ap-ev-name">' + escapeHtml(name) + '</div>';
+        html += '<div class="ap-ev-time">' + formatTimeRange(ev.start.dateTime, ev.end.dateTime) + '</div></div></div></div>';
+      }
+    }
+    html += '</div></div>';
+  }
+  html += '</div>';
+  root.innerHTML = html;
+}
+
+function showModal2(idx) {
+  var ev = currentEvents2[idx]; if (!ev) return;
+  var name = stripEmojis(ev.summary || '') || 'Untitled';
+  var ci = getColorForClass(name), pal = PALETTE[ci];
+  var icon = getSvgIcon(getIconType(name), pal.color);
+  var sd = new Date(ev.start.dateTime);
+  var h = '<div class="ap-modal-bar" style="background:' + pal.color + '"></div><div class="ap-modal-body">';
+  h += '<div class="ap-modal-hdr"><div class="ap-modal-icon">' + icon + '</div>';
+  h += '<div class="ap-modal-title">' + escapeHtml(name) + '</div></div>';
+  h += '<div class="ap-detail"><span class="ap-detail-lbl">Date</span><span class="ap-detail-val">' + formatDateFull(sd) + '</span></div>';
+  h += '<div class="ap-detail"><span class="ap-detail-lbl">Time</span><span class="ap-detail-val">' + formatTimeRange(ev.start.dateTime, ev.end.dateTime) + '</span></div>';
+  if (ev.location) h += '<div class="ap-detail"><span class="ap-detail-lbl">Location</span><span class="ap-detail-val">' + escapeHtml(ev.location) + '</span></div>';
+  if (ev.description) h += '<div class="ap-detail"><span class="ap-detail-lbl">Details</span><span class="ap-detail-val">' + sanitizeDescription(ev.description) + '</span></div>';
+  if (ev.htmlLink) h += '<div class="ap-detail"><span class="ap-detail-lbl">Link</span><span class="ap-detail-val"><a href="' + escapeHtml(ev.htmlLink) + '" target="_blank" rel="noopener">View in Google Calendar</a></span></div>';
+  h += '<button class="ap-modal-close" onclick="closeModal2()">Close</button></div>';
+  document.getElementById('modalContent2').innerHTML = h;
+  document.getElementById('modalOverlay2').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal2(e) {
+  if (e && e.target !== document.getElementById('modalOverlay2')) return;
+  document.getElementById('modalOverlay2').classList.remove('active');
+  document.body.style.overflow = '';
+}
+document.getElementById('calendarRoot2').addEventListener('click', function(e) {
+  var card = e.target.closest('.ap-card');
+  if (card && card.dataset.idx2 !== undefined) { var idx = parseInt(card.dataset.idx2, 10); if (!isNaN(idx)) showModal2(idx); }
+});
+
 async function loadCalendar() {
   updateWeekLabel();
+  updateWeekLabel2();
   showLoading();
+  document.getElementById('ap-loader2').innerHTML = document.getElementById('ap-loader').innerHTML;
   renderCalendar([]);
+  renderCalendar2([]);
   try {
     allCachedEvents = await fetchEvents();
     hideLoading();
+    document.getElementById('ap-loader2').innerHTML = '';
     renderCalendar(filterWeekEvents(allCachedEvents, currentWeekStart));
+    renderCalendar2(filterEvents2(allCachedEvents));
   } catch(err) {
     document.getElementById('statusBanner').innerHTML = '<div class="ap-setup-msg">'
       +'Could not load calendar data. The calendar owner needs to enable '
@@ -964,13 +1125,17 @@ async function loadCalendar() {
       +'or set a Google Calendar API key in <code>CONFIG.API_KEY</code>.'
       +'<br><small style="color:#aaa!important;margin-top:8px!important;display:block!important">'
       +escapeHtml(err.message)+'</small></div>';
+    document.getElementById('statusBanner2').innerHTML = document.getElementById('statusBanner').innerHTML;
   }
 }
 
 var resizeTimer;
 window.addEventListener('resize',function(){
   clearTimeout(resizeTimer);
-  resizeTimer=setTimeout(function(){renderCalendar(currentEvents);},200);
+  resizeTimer=setTimeout(function(){
+    renderCalendar(currentEvents);
+    if (allCachedEvents) { updateWeekLabel2(); renderCalendar2(filterEvents2(allCachedEvents)); }
+  },200);
 });
 
 loadCalendar();
