@@ -1,0 +1,815 @@
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  .atplay-cal {
+    --ap-color-1: #E8943A;
+    --ap-color-2: #7BAED6;
+    --ap-color-3: #E84B8A;
+    --ap-color-4: #6BAE73;
+    --ap-hour-h: 60px;
+    width: 100% !important;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
+    color: #333 !important;
+    line-height: 1.5 !important;
+    -webkit-font-smoothing: antialiased !important;
+    position: relative !important;
+  }
+  .atplay-cal *, .atplay-cal *::before, .atplay-cal *::after {
+    box-sizing: border-box !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .atplay-cal .ap-header {
+    background: #fff !important;
+    border-bottom: 1px solid #e0e0e0 !important;
+    padding: 12px 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+  }
+  .atplay-cal .ap-week-nav {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+  .atplay-cal .ap-week-nav button {
+    background: #fff !important;
+    border: 1px solid #d0d0d0 !important;
+    border-radius: 6px !important;
+    padding: 6px 14px !important;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    color: #444 !important;
+    cursor: pointer !important;
+    transition: background 0.15s, border-color 0.15s !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    line-height: 1.4 !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+    height: auto !important;
+    text-align: center !important;
+  }
+  .atplay-cal .ap-week-nav button:hover {
+    background: #f0f0f0 !important;
+    border-color: #bbb !important;
+  }
+  .atplay-cal .ap-week-label {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #555 !important;
+    text-align: right !important;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
+    text-transform: none !important;
+    margin-left: auto !important;
+  }
+  @keyframes ap-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .atplay-cal .ap-loading-overlay {
+    position: absolute !important;
+    inset: 0 !important;
+    z-index: 99998 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: transparent !important;
+    pointer-events: none !important;
+  }
+  .atplay-cal .ap-loading-wrap {
+    width: 120px !important;
+    height: 120px !important;
+    background: #fff !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: none !important;
+  }
+  .atplay-cal .ap-loading-wrap img {
+    width: 94px !important;
+    height: 94px !important;
+    animation: ap-spin 1.8s linear infinite !important;
+  }
+  .atplay-cal .ap-setup-msg {
+    padding: 20px 24px !important;
+    background: #FFF8E1 !important;
+    border-bottom: 1px solid #F0E0B0 !important;
+    color: #8D6E00 !important;
+    font-size: 13px !important;
+    text-align: center !important;
+  }
+  .atplay-cal .ap-timetable {
+    display: grid !important;
+    grid-template-columns: 52px repeat(7, 1fr) !important;
+    gap: 0 !important;
+    background: #e8e8e8 !important;
+    margin: 0 !important;
+    overflow-x: auto !important;
+    position: relative !important;
+  }
+  .atplay-cal .ap-timetable::after {
+    content: '' !important;
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 1px !important;
+    background: #fff !important;
+    z-index: 5 !important;
+    pointer-events: none !important;
+  }
+  .atplay-cal .ap-time-col {
+    background: #fff !important;
+    display: flex !important;
+    flex-direction: column !important;
+  }
+  .atplay-cal .ap-gutter-corner {
+    border-bottom: 1px solid #e0e0e0 !important;
+    height: 46px !important;
+  }
+  .atplay-cal .ap-time-gutter { position: relative !important; }
+  .atplay-cal .ap-time-label {
+    position: absolute !important;
+    right: 6px !important;
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    color: #aaa !important;
+    line-height: 1 !important;
+    transform: translateY(-50%) !important;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
+    white-space: nowrap !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+  }
+  .atplay-cal .ap-day-col {
+    background: #fff !important;
+    display: flex !important;
+    flex-direction: column !important;
+    min-width: 0 !important;
+    border-left: 1px solid #e8e8e8 !important;
+  }
+  .atplay-cal .ap-day-col:last-child {
+    border-right: 1px solid #e8e8e8 !important;
+  }
+  .atplay-cal .ap-day-hdr {
+    padding: 10px 4px 6px 4px !important;
+    border-bottom: 1px solid #e0e0e0 !important;
+    text-align: center !important;
+    background: #fff !important;
+    height: 46px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+  }
+  .atplay-cal .ap-day-name {
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.8px !important;
+    color: #999 !important;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
+    line-height: .8 !important;
+  }
+  .atplay-cal .ap-day-num {
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    color: #333 !important;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
+    line-height: 1 !important;
+    margin-top: 1.5px !important;
+    width: 24px !important;
+    height: 24px !important;
+    min-width: 24px !important;
+    max-width: 24px !important;
+    min-height: 24px !important;
+    max-height: 24px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 50% !important;
+    padding: 0 !important;
+    flex-shrink: 0 !important;
+  }
+  .atplay-cal .ap-day-col.is-today .ap-day-num {
+    background: var(--ap-color-3) !important;
+    color: #fff !important;
+    margin-top: 3px !important;
+  }
+  .atplay-cal .ap-day-body {
+    position: relative !important;
+    background-color: #fff !important;
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0px, transparent calc(var(--ap-hour-h) - 1px),
+      #eee calc(var(--ap-hour-h) - 1px), #eee var(--ap-hour-h)
+    ) !important;
+    background-size: 100% var(--ap-hour-h) !important;
+    overflow: visible !important;
+  }
+  .atplay-cal .ap-card {
+    position: absolute !important;
+    z-index: 2 !important;
+    border-radius: 5px !important;
+    padding: 0 !important;
+    cursor: pointer !important;
+    transition: box-shadow 0.12s, background 0.12s !important;
+    border: none !important;
+    text-decoration: none !important;
+    text-align: left !important;
+    overflow: hidden !important;
+  }
+  .atplay-cal .ap-card:hover {
+    box-shadow: 0 3px 12px rgba(0,0,0,0.18) !important;
+    z-index: 3 !important;
+    overflow: visible !important;
+  }
+  .atplay-cal .ap-startline {
+    height: 4px !important;
+    margin: 0 !important;
+    border-radius: 5px 5px 0 0 !important;
+  }
+  .atplay-cal .ap-card-inner {
+    padding: 4px 2px 6px 6px !important;
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 5px !important;
+    position: relative !important;
+  }
+  .atplay-cal .ap-icon { display: none !important; }
+  .atplay-cal .ap-icon svg { width: 22px !important; height: 22px !important; display: block !important; }
+  .atplay-cal .ap-info { flex: 1 !important; min-width: 0 !important; }
+  .atplay-cal .ap-ev-name {
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+    color: #333 !important;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
+    text-transform: none !important;
+    text-decoration: none !important;
+    white-space: normal !important;
+    overflow-wrap: break-word !important;
+    word-wrap: break-word !important;
+  }
+  .atplay-cal .ap-ev-time {
+    font-size: 10px !important;
+    color: #777 !important;
+    margin-top: 1px !important;
+    font-weight: 400 !important;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
+    text-transform: none !important;
+    line-height: 1.2 !important;
+  }
+  .atplay-cal .ap-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(0,0,0,0.45) !important;
+    z-index: 99999 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transition: opacity 0.2s !important;
+  }
+  .atplay-cal .ap-overlay.active { opacity: 1 !important; pointer-events: auto !important; }
+  .atplay-cal .ap-modal {
+    background: #fff !important;
+    border-radius: 12px !important;
+    width: 90% !important;
+    max-width: 440px !important;
+    max-height: 85vh !important;
+    overflow-y: auto !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3) !important;
+    transform: translateY(20px) !important;
+    transition: transform 0.25s !important;
+  }
+  .atplay-cal .ap-overlay.active .ap-modal { transform: translateY(0) !important; }
+  .atplay-cal .ap-modal-bar { height: 6px !important; border-radius: 12px 12px 0 0 !important; }
+  .atplay-cal .ap-modal-body { padding: 24px !important; }
+  .atplay-cal .ap-modal-hdr {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 14px !important;
+    margin-bottom: 20px !important;
+  }
+  .atplay-cal .ap-modal-icon { flex-shrink: 0 !important; width: 44px !important; height: 44px !important; }
+  .atplay-cal .ap-modal-icon svg { width: 44px !important; height: 44px !important; display: block !important; }
+  .atplay-cal .ap-modal-title {
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    color: #222 !important;
+    line-height: 1.3 !important;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    margin: 0 !important;
+    border: none !important;
+  }
+  .atplay-cal .ap-detail {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+    padding: 10px 0 !important;
+    border-top: 1px solid #f0f0f0 !important;
+    font-size: 14px !important;
+    color: #555 !important;
+  }
+  .atplay-cal .ap-detail-lbl {
+    font-weight: 600 !important;
+    color: #888 !important;
+    min-width: 80px !important;
+    font-size: 12px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    padding-top: 2px !important;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
+  }
+  .atplay-cal .ap-detail-val {
+    line-height: 1.5 !important;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
+    color: #555 !important;
+    font-size: 14px !important;
+    font-weight: 400 !important;
+  }
+  .atplay-cal .ap-detail-val a { color: var(--ap-color-2) !important; text-decoration: none !important; }
+  .atplay-cal .ap-detail-val a:hover { text-decoration: underline !important; }
+  .atplay-cal .ap-modal-close {
+    display: block !important;
+    width: 100% !important;
+    margin-top: 20px !important;
+    padding: 10px !important;
+    background: #f5f5f5 !important;
+    border: none !important;
+    border-radius: 8px !important;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #666 !important;
+    cursor: pointer !important;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    text-decoration: none !important;
+    line-height: 1.4 !important;
+    text-align: center !important;
+  }
+  .atplay-cal .ap-modal-close:hover { background: #eee !important; }
+  @media (max-width: 768px) {
+    .atplay-cal .ap-header {
+      padding: 10px 12px !important;
+      justify-content: center !important;
+      flex-direction: column !important;
+      align-items: center !important;
+    }
+    .atplay-cal .ap-week-label { font-size: 14px !important; margin-left: 0 !important; text-align: center !important; }
+    .atplay-cal .ap-week-nav button { padding: 6px 10px !important; font-size: 12px !important; }
+    .atplay-cal .ap-timetable {
+      grid-template-columns: 52px repeat(3, 1fr) !important;
+    }
+    .atplay-cal .ap-overlay {
+      align-items: flex-start !important;
+      overflow-y: auto !important;
+      -webkit-overflow-scrolling: touch !important;
+    }
+    .atplay-cal .ap-modal {
+      width: 100% !important;
+      max-width: 100% !important;
+      min-height: 100vh !important;
+      max-height: none !important;
+      border-radius: 0 !important;
+      overflow-y: visible !important;
+    }
+    .atplay-cal .ap-modal-body { padding: 20px 16px !important; }
+  }
+</style>
+
+<div class="atplay-cal ap-3day">
+  <div id="ap-loader-sq" class="ap-loading-overlay"></div>
+  <div class="ap-header">
+    <div class="ap-week-nav">
+      <button onclick="apNav(-1)" aria-label="Previous">&larr; Prev</button>
+      <button class="ap-today-btn" onclick="apToday()">Today</button>
+      <button onclick="apNav(1)" aria-label="Next">Next &rarr;</button>
+    </div>
+    <div class="ap-week-label" id="apWeekLabel"></div>
+  </div>
+  <div id="apStatusBanner"></div>
+  <div id="apCalRoot"></div>
+  <div class="ap-overlay" id="apOverlay" onclick="apCloseModal(event)">
+    <div class="ap-modal" id="apModal" onclick="event.stopPropagation()"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+var CONFIG = {
+  CALENDAR_ID: 'c_ade5d17214381af99c90f185a13faba2bbbc86b080a1e69c95aeaf90aa9fce59@group.calendar.google.com',
+  API_KEY: 'AIzaSyDmNcjBHQQYdHlLW8Tt0URrHXH7UWgobsw',
+  TIMEZONE: 'America/New_York',
+  MOBILE_BREAKPOINT: 768,
+  HOUR_HEIGHT: 60,
+  START_HOUR: 8,
+  END_HOUR: 21
+};
+
+var PALETTE = [
+  { color: '#E8943A' },
+  { color: '#7BAED6' },
+  { color: '#E84B8A' },
+  { color: '#6BAE73' }
+];
+
+var ICON_MAP = [
+  { keywords: ['yoga','stretch','mindful','meditation','zen'], icon: 'yoga' },
+  { keywords: ['dance','ballet','hip hop','hiphop','jazz','tap','salsa','movement'], icon: 'dance' },
+  { keywords: ['karate','martial','judo','taekwondo','kung fu','aikido','capoeira'], icon: 'martial' },
+  { keywords: ['swim','aqua','water','pool','dive'], icon: 'swim' },
+  { keywords: ['music','sing','choir','drum','guitar','piano','violin','band','ukulele'], icon: 'music' },
+  { keywords: ['art','craft','paint','draw','sketch','pottery','clay','sculpt','creative'], icon: 'art' },
+  { keywords: ['cook','bake','kitchen','chef','food','culinary'], icon: 'cook' },
+  { keywords: ['science','stem','lab','experiment','robot','coding','tech','engineer'], icon: 'science' },
+  { keywords: ['soccer','basketball','baseball','tennis','sport','football','volley','lacrosse','hockey'], icon: 'sports' },
+  { keywords: ['climb','adventure','obstacle','parkour','ninja'], icon: 'climb' },
+  { keywords: ['theatre','theater','drama','act','improv','perform','circus'], icon: 'theater' },
+  { keywords: ['read','book','story','literacy','writing','journal'], icon: 'book' },
+  { keywords: ['garden','nature','outdoor','hike','forest','farm'], icon: 'nature' },
+  { keywords: ['chess','game','puzzle','board','strategy'], icon: 'game' },
+  { keywords: ['gym','fitness','workout','exercise','boot camp','cross'], icon: 'fitness' },
+  { keywords: ['play','free','open','recess','fun'], icon: 'play' },
+  { keywords: ['photo','film','video','media','animation'], icon: 'camera' },
+  { keywords: ['lego','build','construct','maker','tinker'], icon: 'build' }
+];
+
+function getSvgIcon(type, c) {
+  var icons = {
+    yoga: '<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="8" r="4" fill="'+c+'"/><path d="M20 14c-2 0-3.5 1-4.5 2.5L10 22l2.5 1.5 4-3.5v4l-5.5 8 2.5 1.5L18 28l2 3 2-3 4.5 5.5 2.5-1.5-5.5-8v-4l4 3.5L30 22l-5.5-5.5C23.5 15 22 14 20 14z" fill="'+c+'"/></svg>',
+    dance: '<svg viewBox="0 0 40 40" fill="none"><circle cx="22" cy="7" r="4" fill="'+c+'"/><path d="M18 13c-1 0-2 .5-2.5 1.5L12 22h3l2-4 1 3-4 7 2.5 1.5L20 24l2 5h3l-3-8 3-4c1-1.5.5-3-.5-4s-3-1-4 0z" fill="'+c+'"/><path d="M26 16c1 2 2 4 1 6l-1 3h3l1-3c1-3 0-5-1-7l-3 1z" fill="'+c+'" opacity="0.7"/></svg>',
+    martial: '<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="7" r="4" fill="'+c+'"/><path d="M20 13c-2 0-3 1-3.5 2L14 20l3 1 2-3v4l-5 8 2.5 1.5L20 27l3.5 4.5L26 30l-5-8v-4l4 4 6-1-1-2.5-5-3c-1-1-2.5-2.5-5-2.5z" fill="'+c+'"/></svg>',
+    swim: '<svg viewBox="0 0 40 40" fill="none"><circle cx="12" cy="16" r="3.5" fill="'+c+'"/><path d="M16 18l8-3 4 2 2-2.5-5-3c-1-.5-2-.3-3 .2l-4 2-2.5-1.5L14 14l2 4z" fill="'+c+'"/><path d="M6 26q2-2 5 0t5 0 5 0 5 0 5 0" stroke="'+c+'" stroke-width="2.5" fill="none" stroke-linecap="round"/><path d="M6 31q2-2 5 0t5 0 5 0 5 0 5 0" stroke="'+c+'" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.5"/></svg>',
+    music: '<svg viewBox="0 0 40 40" fill="none"><path d="M28 6v22" stroke="'+c+'" stroke-width="2.5"/><path d="M12 10v20" stroke="'+c+'" stroke-width="2.5"/><rect x="12" y="6" width="16" height="8" rx="2" fill="'+c+'" opacity="0.3"/><circle cx="9" cy="30" r="4" fill="'+c+'"/><circle cx="25" cy="28" r="4" fill="'+c+'"/></svg>',
+    art: '<svg viewBox="0 0 40 40" fill="none"><path d="M20 4C11 4 4 11 4 20s7 16 16 16c1.5 0 2.5-1 2.5-2.5 0-.6-.2-1.2-.6-1.6-.3-.4-.5-1-.5-1.6 0-1.4 1.1-2.5 2.5-2.5H27c5 0 9-4 9-9 0-8.3-7.2-14.8-16-14.8z" fill="'+c+'" opacity="0.15"/><circle cx="14" cy="14" r="3" fill="'+c+'"/><circle cx="24" cy="12" r="3" fill="'+c+'" opacity="0.7"/><circle cx="28" cy="20" r="3" fill="'+c+'" opacity="0.5"/><circle cx="13" cy="23" r="3" fill="'+c+'" opacity="0.8"/></svg>',
+    cook: '<svg viewBox="0 0 40 40" fill="none"><ellipse cx="20" cy="12" rx="12" ry="5" fill="'+c+'" opacity="0.3"/><path d="M8 12v4c0 6.6 5.4 12 12 12s12-5.4 12-12v-4" stroke="'+c+'" stroke-width="2.5" fill="none"/><path d="M20 2v6M15 3l2 5M25 3l-2 5" stroke="'+c+'" stroke-width="2" stroke-linecap="round"/></svg>',
+    science: '<svg viewBox="0 0 40 40" fill="none"><path d="M16 4h8v12l8 14c1 2 0 4-2 4H10c-2 0-3-2-2-4l8-14V4z" fill="'+c+'" opacity="0.15" stroke="'+c+'" stroke-width="2"/><path d="M16 4h8" stroke="'+c+'" stroke-width="2.5" stroke-linecap="round"/><circle cx="18" cy="28" r="2" fill="'+c+'"/><circle cx="23" cy="25" r="1.5" fill="'+c+'" opacity="0.6"/><circle cx="20" cy="31" r="1.5" fill="'+c+'" opacity="0.8"/></svg>',
+    sports: '<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="13" stroke="'+c+'" stroke-width="2.5" fill="'+c+'" fill-opacity="0.12"/><path d="M20 7v26M7 20h26" stroke="'+c+'" stroke-width="2"/><path d="M10 10c3 3 7 5 10 5s7-2 10-5M10 30c3-3 7-5 10-5s7 2 10 5" stroke="'+c+'" stroke-width="2" fill="none"/></svg>',
+    climb: '<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="8" r="4" fill="'+c+'"/><path d="M20 14c-1.5 0-2.5.8-3 2l-3 7h3l2-4 1 6-5 7 2.5 1.5L20 28l2.5 5.5L25 32l-3-7v-6l3 4 3-1-1-2-4-4c-.8-1.2-1.8-2-3-2z" fill="'+c+'"/></svg>',
+    theater: '<svg viewBox="0 0 40 40" fill="none"><path d="M6 8h13v16c0 3.5-2.9 6.5-6.5 6.5S6 27.5 6 24V8z" fill="'+c+'" opacity="0.25"/><circle cx="10" cy="16" r="1.5" fill="'+c+'"/><circle cx="15" cy="16" r="1.5" fill="'+c+'"/><path d="M9 21c1 1.5 3.5 1.5 5 0" stroke="'+c+'" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M21 6h13v16c0 3.5-2.9 6.5-6.5 6.5S21 25.5 21 22V6z" fill="'+c+'" opacity="0.4"/><circle cx="25" cy="14" r="1.5" fill="'+c+'"/><circle cx="30" cy="14" r="1.5" fill="'+c+'"/><path d="M24.5 19.5c1-1.5 3.5-1.5 5 0" stroke="'+c+'" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>',
+    book: '<svg viewBox="0 0 40 40" fill="none"><path d="M6 8c3-2 7-2 14 0v24c-7-2-11-2-14 0V8z" fill="'+c+'" opacity="0.2"/><path d="M34 8c-3-2-7-2-14 0v24c7-2 11-2 14 0V8z" fill="'+c+'" opacity="0.35"/><path d="M20 8v24" stroke="'+c+'" stroke-width="1.5"/></svg>',
+    nature: '<svg viewBox="0 0 40 40" fill="none"><path d="M20 4L8 24h8l-4 12h16l-4-12h8L20 4z" fill="'+c+'" opacity="0.3"/><rect x="18" y="28" width="4" height="8" fill="'+c+'" opacity="0.5"/></svg>',
+    game: '<svg viewBox="0 0 40 40" fill="none"><rect x="6" y="6" width="28" height="28" rx="3" fill="'+c+'" opacity="0.15"/><rect x="6" y="6" width="14" height="14" fill="'+c+'" opacity="0.25"/><rect x="20" y="20" width="14" height="14" fill="'+c+'" opacity="0.25"/><circle cx="13" cy="27" r="3" fill="'+c+'"/><circle cx="27" cy="13" r="3" fill="'+c+'"/></svg>',
+    fitness: '<svg viewBox="0 0 40 40" fill="none"><rect x="4" y="16" width="6" height="8" rx="2" fill="'+c+'"/><rect x="30" y="16" width="6" height="8" rx="2" fill="'+c+'"/><rect x="8" y="13" width="5" height="14" rx="2" fill="'+c+'" opacity="0.6"/><rect x="27" y="13" width="5" height="14" rx="2" fill="'+c+'" opacity="0.6"/><rect x="13" y="18" width="14" height="4" rx="1" fill="'+c+'" opacity="0.4"/></svg>',
+    play: '<svg viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="15" fill="'+c+'" opacity="0.15"/><path d="M28 20l-12 8V12l12 8z" fill="'+c+'"/></svg>',
+    camera: '<svg viewBox="0 0 40 40" fill="none"><path d="M4 14a3 3 0 013-3h5l2-3h12l2 3h5a3 3 0 013 3v16a3 3 0 01-3 3H7a3 3 0 01-3-3V14z" fill="'+c+'" opacity="0.2"/><circle cx="20" cy="21" r="7" stroke="'+c+'" stroke-width="2.5" fill="none"/><circle cx="20" cy="21" r="4" fill="'+c+'" opacity="0.4"/></svg>',
+    build: '<svg viewBox="0 0 40 40" fill="none"><rect x="6" y="22" width="10" height="10" rx="1" fill="'+c+'" opacity="0.5"/><rect x="15" y="14" width="10" height="18" rx="1" fill="'+c+'" opacity="0.35"/><rect x="24" y="8" width="10" height="24" rx="1" fill="'+c+'" opacity="0.5"/></svg>',
+    default: '<svg viewBox="0 0 40 40" fill="none"><path d="M20 4l4.5 9.2 10.1 1.5-7.3 7.1 1.7 10.1L20 27l-9 4.8 1.7-10.1-7.3-7.1 10.1-1.5L20 4z" fill="'+c+'"/></svg>'
+  };
+  return icons[type] || icons.default;
+}
+function getIconType(name) {
+  var lower = name.toLowerCase();
+  for (var i = 0; i < ICON_MAP.length; i++)
+    for (var j = 0; j < ICON_MAP[i].keywords.length; j++)
+      if (lower.indexOf(ICON_MAP[i].keywords[j]) !== -1) return ICON_MAP[i].icon;
+  return 'default';
+}
+function stripEmojis(s) {
+  s=s.replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE00}-\u{FE0F}\u{200D}\u{20E3}\u{E0020}-\u{E007F}]/gu, '');
+  s=s.replace(/^[^\p{L}\p{N}]+/gu,'');
+  return s.replace(/\s{2,}/g, ' ').trim();
+}
+function hexToRgba(hex,a) {
+  var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return 'rgba('+r+','+g+','+b+','+a+')';
+}
+function escapeHtml(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+function sanitizeDescription(h){var t=document.createElement('div');t.innerHTML=h;var b=t.querySelectorAll('script,style,iframe,object,embed');for(var i=0;i<b.length;i++)b[i].remove();return t.innerHTML;}
+
+var colorAssignments = {}, nextColorIndex = 0, currentEvents = [];
+function getColorForClass(name) {
+  var key = name.trim().toLowerCase();
+  if (colorAssignments[key] !== undefined) return colorAssignments[key];
+  var max = PALETTE.length - 1;
+  colorAssignments[key] = nextColorIndex % max;
+  nextColorIndex++;
+  return colorAssignments[key];
+}
+
+var currentWeekStart = getWeekStart(new Date());
+var currentDayStart = (function(){ var d = new Date(); d.setHours(0,0,0,0); return d; })();
+var allCachedEvents = null;
+
+function isMobile() { return window.innerWidth <= CONFIG.MOBILE_BREAKPOINT; }
+function getWeekStart(d) { var r = new Date(d); r.setDate(r.getDate()-r.getDay()); r.setHours(0,0,0,0); return r; }
+function addDays(d,n) { var r = new Date(d); r.setDate(r.getDate()+n); return r; }
+function formatDate(d) { return d.toLocaleDateString('en-US',{month:'short',day:'numeric'}); }
+function formatDateFull(d) { return d.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric',year:'numeric'}); }
+function fmtTime(d,showPeriod) {
+  var h=d.getHours(),m=d.getMinutes(),p=h>=12?'PM':'AM';
+  h=h%12||12;
+  var t=m===0?String(h):h+':'+String(m).padStart(2,'0');
+  return showPeriod?t+' '+p:t;
+}
+function formatTimeRange(a,b) { return fmtTime(new Date(a),false)+' – '+fmtTime(new Date(b),true); }
+function isSameDay(a,b) { return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate(); }
+function isToday(d) { return isSameDay(d,new Date()); }
+function hourLabel(h) { if(h===0)return '12 AM';if(h<12)return h+' AM';if(h===12)return '12 PM';return(h-12)+' PM'; }
+
+function filterWeekEvents(events, weekStart) {
+  var weekEnd=addDays(weekStart,7);
+  return events.filter(function(e){var d=new Date(e.start.dateTime);return d>=weekStart&&d<weekEnd;});
+}
+function filterEvents(events) {
+  if (isMobile()) {
+    var end = addDays(currentDayStart, 3);
+    return events.filter(function(e) { var d = new Date(e.start.dateTime); return d >= currentDayStart && d < end; });
+  }
+  return filterWeekEvents(events, currentWeekStart);
+}
+
+function updateLabel() {
+  var mob = isMobile();
+  var start = mob ? currentDayStart : currentWeekStart;
+  var end = addDays(start, mob ? 2 : 6);
+  document.getElementById('apWeekLabel').textContent = formatDate(start) + ' – ' + formatDate(end) + ', ' + end.getFullYear();
+}
+
+window.apNav = function(dir) {
+  if (isMobile()) currentDayStart = addDays(currentDayStart, dir * 3);
+  else currentWeekStart = addDays(currentWeekStart, dir * 7);
+  updateLabel();
+  if (allCachedEvents) render(filterEvents(allCachedEvents));
+};
+window.apToday = function() {
+  currentWeekStart = getWeekStart(new Date());
+  currentDayStart = (function(){ var d = new Date(); d.setHours(0,0,0,0); return d; })();
+  updateLabel();
+  if (allCachedEvents) render(filterEvents(allCachedEvents));
+};
+
+/* ---- iCal ---- */
+function parseICalDate(s) {
+  if (!s) return null; s=s.replace(/^.*:/,'');
+  if (s.indexOf('T')!==-1) {
+    var iso=s.slice(0,4)+'-'+s.slice(4,6)+'-'+s.slice(6,8)+'T'+s.slice(9,11)+':'+s.slice(11,13)+':'+s.slice(13,15);
+    return new Date(s.charAt(s.length-1)==='Z'?iso+'Z':iso);
+  }
+  return new Date(s.slice(0,4)+'-'+s.slice(4,6)+'-'+s.slice(6,8)+'T00:00:00');
+}
+function parseICal(text) {
+  var lines=[],raw=text.split(/\r?\n/);
+  for (var i=0;i<raw.length;i++) {
+    if ((raw[i].charAt(0)===' '||raw[i].charAt(0)==='\t')&&lines.length) lines[lines.length-1]+=raw[i].slice(1);
+    else lines.push(raw[i]);
+  }
+  var events=[],inEv=false,ev={};
+  for (var j=0;j<lines.length;j++) {
+    var ln=lines[j];
+    if (ln==='BEGIN:VEVENT'){inEv=true;ev={};continue;}
+    if (ln==='END:VEVENT'){inEv=false;if(ev.dtstart)events.push(ev);continue;}
+    if (!inEv) continue;
+    var ci=ln.indexOf(':');if(ci<0)continue;
+    var key=ln.slice(0,ci).split(';')[0].toUpperCase(),val=ln.slice(ci+1);
+    var ue=function(v){return v.replace(/\\n/g,'\n').replace(/\\,/g,',').replace(/\\\\/g,'\\');};
+    if(key==='SUMMARY')ev.summary=ue(val);
+    else if(key==='DTSTART')ev.dtstart=parseICalDate(val);
+    else if(key==='DTEND')ev.dtend=parseICalDate(val);
+    else if(key==='DESCRIPTION')ev.description=ue(val);
+    else if(key==='LOCATION')ev.location=ue(val);
+  }
+  return events;
+}
+function normalizeAllEvents(ical) {
+  return ical.filter(function(e){
+    if(!e.dtstart)return false;
+    var allDay=e.dtstart.getHours()===0&&e.dtstart.getMinutes()===0&&e.dtend&&e.dtend.getHours()===0&&e.dtend.getMinutes()===0&&(e.dtend-e.dtstart)>=86400000;
+    if(allDay)return false;
+    if(e.summary&&e.summary.toLowerCase().indexOf('open play')!==-1)return false;
+    return true;
+  }).sort(function(a,b){return a.dtstart-b.dtstart;}).map(function(e){
+    return {summary:e.summary||'Untitled',start:{dateTime:e.dtstart.toISOString()},end:{dateTime:(e.dtend||new Date(e.dtstart.getTime()+3600000)).toISOString()},description:e.description||'',location:e.location||'',htmlLink:''};
+  });
+}
+
+/* ---- Fetch ---- */
+var ICAL_URL = 'https://calendar.google.com/calendar/ical/' + encodeURIComponent(CONFIG.CALENDAR_ID) + '/public/basic.ics';
+var CORS_PROXIES = [
+  function(u) { return 'https://corsproxy.io/?' + encodeURIComponent(u); },
+  function(u) { return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u); },
+  function(u) { return 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u); }
+];
+async function fetchViaAPI() {
+  if(!CONFIG.API_KEY)throw new Error('No API key');
+  var calId=encodeURIComponent(CONFIG.CALENDAR_ID);
+  var rangeStart=addDays(new Date(),-90),rangeEnd=addDays(new Date(),90);
+  var url='https://www.googleapis.com/calendar/v3/calendars/'+calId+'/events?key='+CONFIG.API_KEY+'&timeMin='+rangeStart.toISOString()+'&timeMax='+rangeEnd.toISOString()+'&singleEvents=true&orderBy=startTime&timeZone='+CONFIG.TIMEZONE+'&maxResults=2500';
+  var res=await fetch(url);if(!res.ok)throw new Error('API '+res.status);
+  var data=await res.json();return(data.items||[]).filter(function(e){return e.start&&e.start.dateTime&&!(e.summary&&e.summary.toLowerCase().indexOf('open play')!==-1);});
+}
+async function fetchViaICal() {
+  var errors=[];
+  for (var i=0;i<CORS_PROXIES.length;i++) {
+    try {
+      var res=await fetch(CORS_PROXIES[i](ICAL_URL));
+      if(!res.ok)throw new Error('HTTP '+res.status);
+      var text=await res.text();
+      if(text.indexOf('BEGIN:VCALENDAR')===-1)throw new Error('Not iCal');
+      return normalizeAllEvents(parseICal(text));
+    } catch(e){errors.push('Proxy '+(i+1)+': '+e.message);}
+  }
+  throw new Error(errors.join(' | '));
+}
+async function fetchViaGoogleEmbed() {
+  var calId=encodeURIComponent(CONFIG.CALENDAR_ID);
+  var rangeStart=addDays(new Date(),-90),rangeEnd=addDays(new Date(),90);
+  var url='https://www.googleapis.com/calendar/v3/calendars/'+calId+'/events?key=AIzaSyBNlYH01_9Hc5S1J9vuFmu2nUqBZJNAXxs&timeMin='+rangeStart.toISOString()+'&timeMax='+rangeEnd.toISOString()+'&singleEvents=true&orderBy=startTime&timeZone='+CONFIG.TIMEZONE+'&maxResults=2500';
+  var res=await fetch(url);if(!res.ok)throw new Error('Embed API '+res.status);
+  var data=await res.json();return(data.items||[]).filter(function(e){return e.start&&e.start.dateTime&&!(e.summary&&e.summary.toLowerCase().indexOf('open play')!==-1);});
+}
+async function fetchEvents() {
+  var errors=[];
+  if(CONFIG.API_KEY){try{return await fetchViaAPI();}catch(e){errors.push('API: '+e.message);}}
+  try{return await fetchViaICal();}catch(e){errors.push('iCal: '+e.message);}
+  try{return await fetchViaGoogleEmbed();}catch(e){errors.push('Embed: '+e.message);}
+  throw new Error(errors.join(' | '));
+}
+
+/* ---- Render ---- */
+var MIN_VISUAL_MINUTES = 50;
+function computeOverlapLayout(dayEvents) {
+  var result={};
+  for(var i=0;i<dayEvents.length;i++) result[i]={col:0,totalCols:1};
+  if(dayEvents.length<=1) return result;
+  function visualEnd(ev){
+    var s=new Date(ev.start.dateTime),e=new Date(ev.end.dateTime);
+    var minE=new Date(s.getTime()+MIN_VISUAL_MINUTES*60000);
+    return e>minE?e:minE;
+  }
+  function overlaps(a,b){
+    return new Date(dayEvents[a].start.dateTime)<visualEnd(dayEvents[b])
+        && new Date(dayEvents[b].start.dateTime)<visualEnd(dayEvents[a]);
+  }
+  var visited={},groups=[];
+  for(var i=0;i<dayEvents.length;i++){
+    if(visited[i])continue;
+    var group=[i];visited[i]=true;var q=0;
+    while(q<group.length){
+      for(var j=0;j<dayEvents.length;j++){
+        if(!visited[j]&&overlaps(group[q],j)){visited[j]=true;group.push(j);}
+      }
+      q++;
+    }
+    groups.push(group);
+  }
+  for(var g=0;g<groups.length;g++){
+    var grp=groups[g];
+    if(grp.length===1)continue;
+    grp.sort(function(a,b){return new Date(dayEvents[a].start.dateTime)-new Date(dayEvents[b].start.dateTime);});
+    var cols=[];
+    for(var i=0;i<grp.length;i++){
+      var idx=grp[i],evStart=new Date(dayEvents[idx].start.dateTime);
+      var vEnd=visualEnd(dayEvents[idx]);
+      var placed=false;
+      for(var c=0;c<cols.length;c++){
+        if(evStart>=cols[c]){cols[c]=vEnd;result[idx].col=c;placed=true;break;}
+      }
+      if(!placed){cols.push(vEnd);result[idx].col=cols.length-1;}
+    }
+    for(var i=0;i<grp.length;i++) result[grp[i]].totalCols=cols.length;
+  }
+  return result;
+}
+
+function groupByDay(events) {
+  var mob = isMobile(), numDays = mob ? 3 : 7;
+  var start = mob ? currentDayStart : currentWeekStart;
+  var days = [];
+  for (var i = 0; i < numDays; i++) days.push({ date: addDays(start, i), events: [] });
+  for (var j = 0; j < events.length; j++) {
+    var d = new Date(events[j].start.dateTime);
+    for (var k = 0; k < days.length; k++) if (isSameDay(d, days[k].date)) { days[k].events.push(events[j]); break; }
+  }
+  return days;
+}
+
+function render(events) {
+  currentEvents = events;
+  var root = document.getElementById('apCalRoot');
+  var days = groupByDay(events);
+  var numDays = days.length;
+  var dayNames = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var H = CONFIG.HOUR_HEIGHT, totalH = (CONFIG.END_HOUR - CONFIG.START_HOUR) * H;
+  var html = '<div class="ap-timetable" style="grid-template-columns: 52px repeat(' + numDays + ', 1fr) !important">';
+  html += '<div class="ap-time-col"><div class="ap-gutter-corner"></div>';
+  html += '<div class="ap-time-gutter" style="height:' + totalH + 'px">';
+  for (var h = CONFIG.START_HOUR; h <= CONFIG.END_HOUR; h++) {
+    if (h === CONFIG.START_HOUR || h === CONFIG.END_HOUR) continue;
+    html += '<div class="ap-time-label" style="top:' + ((h - CONFIG.START_HOUR) * H) + 'px">' + hourLabel(h) + '</div>';
+  }
+  html += '</div></div>';
+  for (var i = 0; i < days.length; i++) {
+    var day = days[i], today = isToday(day.date);
+    html += '<div class="ap-day-col' + (today ? ' is-today' : '') + '">';
+    html += '<div class="ap-day-hdr"><div class="ap-day-name">' + dayNames[day.date.getDay()] + '</div>';
+    html += '<div class="ap-day-num">' + day.date.getDate() + '</div></div>';
+    html += '<div class="ap-day-body" style="height:' + totalH + 'px">';
+    var layout = computeOverlapLayout(day.events);
+    for (var j = 0; j < day.events.length; j++) {
+      var ev = day.events[j], gi = events.indexOf(ev);
+      var name = stripEmojis(ev.summary || '') || 'Untitled';
+      var ci = getColorForClass(name), pal = PALETTE[ci];
+      var icon = getSvgIcon(getIconType(name), pal.color);
+      var st = new Date(ev.start.dateTime), et = new Date(ev.end.dateTime);
+      var topPx = Math.max(0, (st.getHours() + st.getMinutes() / 60 - CONFIG.START_HOUR) * H);
+      var heightPx = Math.max(30, (et.getHours() + et.getMinutes() / 60 - st.getHours() - st.getMinutes() / 60) * H);
+      var lo = layout[j], colPct = lo.col / lo.totalCols * 100, widthPct = 100 / lo.totalCols;
+      var bgColor = hexToRgba(pal.color, 0.2);
+      var posStyle = 'top:' + topPx + 'px;height:' + heightPx + 'px;left:calc(' + colPct + '% + 2px);width:calc(' + widthPct + '% - 4px);background:linear-gradient(' + bgColor + ',' + bgColor + '),#fff';
+      html += '<div class="ap-card" data-idx="' + gi + '" style="' + posStyle + '">';
+      html += '<div class="ap-startline" style="background:' + pal.color + '"></div>';
+      if (lo.totalCols > 1) {
+        html += '<div class="ap-card-inner"><div class="ap-info"><div class="ap-ev-name">' + escapeHtml(name) + '</div>';
+        html += '<div class="ap-ev-time">' + formatTimeRange(ev.start.dateTime, ev.end.dateTime) + '</div></div></div></div>';
+      } else {
+        html += '<div class="ap-card-inner"><div class="ap-icon">' + icon + '</div>';
+        html += '<div class="ap-info"><div class="ap-ev-name">' + escapeHtml(name) + '</div>';
+        html += '<div class="ap-ev-time">' + formatTimeRange(ev.start.dateTime, ev.end.dateTime) + '</div></div></div></div>';
+      }
+    }
+    html += '</div></div>';
+  }
+  html += '</div>';
+  root.innerHTML = html;
+}
+
+/* ---- Modal ---- */
+window.apCloseModal = function(e) {
+  if (e && e.target !== document.getElementById('apOverlay')) return;
+  document.getElementById('apOverlay').classList.remove('active');
+  document.body.style.overflow = '';
+};
+function showModal(idx) {
+  var ev = currentEvents[idx]; if (!ev) return;
+  var name = stripEmojis(ev.summary || '') || 'Untitled';
+  var ci = getColorForClass(name), pal = PALETTE[ci];
+  var icon = getSvgIcon(getIconType(name), pal.color);
+  var sd = new Date(ev.start.dateTime);
+  var h = '<div class="ap-modal-bar" style="background:' + pal.color + '"></div><div class="ap-modal-body">';
+  h += '<div class="ap-modal-hdr"><div class="ap-modal-icon">' + icon + '</div>';
+  h += '<div class="ap-modal-title">' + escapeHtml(name) + '</div></div>';
+  h += '<div class="ap-detail"><span class="ap-detail-lbl">Date</span><span class="ap-detail-val">' + formatDateFull(sd) + '</span></div>';
+  h += '<div class="ap-detail"><span class="ap-detail-lbl">Time</span><span class="ap-detail-val">' + formatTimeRange(ev.start.dateTime, ev.end.dateTime) + '</span></div>';
+  if (ev.location) h += '<div class="ap-detail"><span class="ap-detail-lbl">Location</span><span class="ap-detail-val">' + escapeHtml(ev.location) + '</span></div>';
+  if (ev.description) h += '<div class="ap-detail"><span class="ap-detail-lbl">Details</span><span class="ap-detail-val">' + sanitizeDescription(ev.description) + '</span></div>';
+  if (ev.htmlLink) h += '<div class="ap-detail"><span class="ap-detail-lbl">Link</span><span class="ap-detail-val"><a href="' + escapeHtml(ev.htmlLink) + '" target="_blank" rel="noopener">View in Google Calendar</a></span></div>';
+  h += '<button class="ap-modal-close" onclick="apCloseModal()">Close</button></div>';
+  document.getElementById('apModal').innerHTML = h;
+  document.getElementById('apOverlay').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') apCloseModal(); });
+document.getElementById('apCalRoot').addEventListener('click', function(e) {
+  var card = e.target.closest('.ap-card');
+  if (card) { var idx = parseInt(card.dataset.idx, 10); if (!isNaN(idx)) showModal(idx); }
+});
+
+/* ---- Loading ---- */
+function showLoading() {
+  document.getElementById('ap-loader-sq').innerHTML =
+    '<div class="ap-loading-wrap"><img src="data:image/png;base64,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"></div>';
+}
+function hideLoading() { document.getElementById('ap-loader-sq').innerHTML = ''; }
+
+/* ---- Init ---- */
+var resizeTimer;
+window.addEventListener('resize', function() {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(function() {
+    updateLabel();
+    if (allCachedEvents) render(filterEvents(allCachedEvents));
+  }, 200);
+});
+
+(async function() {
+  updateLabel();
+  showLoading();
+  render([]);
+  try {
+    allCachedEvents = await fetchEvents();
+    hideLoading();
+    render(filterEvents(allCachedEvents));
+  } catch(err) {
+    hideLoading();
+    document.getElementById('apStatusBanner').innerHTML = '<div class="ap-setup-msg">'
+      +'Could not load calendar data. The calendar owner needs to enable '
+      +'"Make available to public" in the calendar\'s Access permissions, '
+      +'or set a Google Calendar API key in <code>CONFIG.API_KEY</code>.'
+      +'<br><small style="color:#aaa!important;margin-top:8px!important;display:block!important">'
+      +escapeHtml(err.message)+'</small></div>';
+  }
+})();
+})();
+</script>
