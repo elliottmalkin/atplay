@@ -6,7 +6,7 @@
 <title>At Play — Weekly Schedule</title>
 <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-  body { background: #f0f0f0 !important; }
+  body { background: #f0f0f0 !important; padding-top: 24px !important; }
   .ap-page-wrap { background: #fff !important; }
   .atplay-cal {
     --ap-color-1: #E8943A;
@@ -412,9 +412,11 @@
   @media (max-width: 768px) {
     .atplay-cal .ap-header {
       padding: 10px 12px !important;
-      justify-content: flex-start !important;
+      justify-content: center !important;
+      flex-direction: column !important;
+      align-items: center !important;
     }
-    .atplay-cal .ap-week-label { font-size: 14px !important; }
+    .atplay-cal .ap-week-label { font-size: 14px !important; margin-left: 0 !important; text-align: center !important; }
     .atplay-cal .ap-week-nav button { padding: 6px 10px !important; font-size: 12px !important; }
 
     .atplay-cal:not(.ap-3day) .ap-timetable {
